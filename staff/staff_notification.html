@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruckFix Pro - Notifications</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="../style.css">
+            <link rel="stylesheet" href="../styles/staff.css">
+    <style>
+        /* Reusing previous stylesheet with notification-specific styles */
+     
+        /* Notification-specific styles */
+        .notifications-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .notifications-list {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: start;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .notification-icon {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            width: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notification-content {
+            flex-grow: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .notification-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+        }
+
+        .notification-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-unread {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .status-read {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .notification-filters {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-option:hover {
+            background-color: var(--background-color);
+        }
+
+        .filter-option i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+
+        .filter-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .filter-option.active i {
+            color: white;
+        }
+
+        .notification-details {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .notification-details.active {
+            display: block;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .notifications-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Notification Type Icons */
+        .icon-task {
+            color: var(--primary-color);
+        }
+
+        .icon-alert {
+            color: var(--danger-color);
+        }
+
+        .icon-update {
+            color: var(--success-color);
+        }
+
+        .icon-system {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar (Same as previous pages) -->
+    <!-- Staff Navigation Bar -->
+        <!-- Staff Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
+                <div class="nav-links">
+                    <a href="staff_dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="invoice.html" class="nav-link">Invoices</a>
+                    <a href="client.html" class="nav-link">Clients</a>
+                    <a href="myTask.html" class="nav-link">Tasks</a>
+                    <a href="staff_Profile.html" class="nav-link">Profile</a>
+                </div>
+                <span class="navigation__group">
+                    <i class="fas fa-message"></i>
+                    <img class="icon" src="assets/message.svg" alt="Message">
+                    <i class="fas fa-bell"></i>
+                    <img class="icon" src="assets/notification.svg" alt="Notification">
+                    <img class="profile" src="assets/natalia.jpg" alt="Natalia">
+                </span>
+                <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+                    <nav>
+                        <ul>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                    <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                    <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                                </svg>
+                                My Profile
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path
+                                        d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                                </svg>
+                                Account Settings
+                            </li>
+                        </ul>
+                        <hr class="divider">
+                        <ul>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                                    <path d="M7 20l10 0" />
+                                    <path d="M9 16l0 4" />
+                                    <path d="M15 16l0 4" />
+                                    <path d="M8 12l3 -3l2 2l3 -3" />
+                                </svg> Device Management
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M15 12h-12l3 -3" />
+                                    <path d="M6 15l-3 -3" />
+                                </svg>
+                                Sign Out
+                            </li>
+                        </ul>
+                        <hr class="divider">
+                        <div class="switch__account">
+                            <h2>
+                                Switch Account
+                            </h2>
+                            <ul>
+                                <li class="active">
+                                    <img src="assets/natalia.jpg" alt="Natalia">
+                                    <div class="user">
+                                        <div class="name">Natalia Taylor</div>
+                                        <div class="email">natalia@example.com</div>
+                                    </div>
+                                    <div class="marker">
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="assets/melissa.jpg" alt="Melissa">
+                                    <div class="user">
+                                        <div class="name">Melissa Johnson</div>
+                                        <div class="email">mel@example.com</div>
+                                    </div>
+                                    <div class="marker">
+                                    </div>
+                                </li>
+                            </ul>
+                            <button class="sign-out-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M15 12h-12l3 -3" />
+                                    <path d="M6 15l-3 -3" />
+                                </svg>
+                                Sign out all accounts
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Staff Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="staff_dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="invoice.html" class="menu-item">
+                    <i class="fas fa-file-invoice"></i>
+                    Invoices
+                </a>
+                    <a href="invoice_creation.html" class="menu-item">
+                        <i class="fas fa-file"></i>
+                        Invoice Creation
+                    </a>
+                    <a href="receipt.html" class="menu-item">
+                        <i class="fa-solid fa-receipt"></i>
+                        Receipt Records
+                    </a>
+                    <a href="receipt_creation.html" class="menu-item">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        Receipt Creation
+                    </a>
+                <a href="client.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="myTask.html" class="menu-item">
+                    <i class="fas fa-tasks"></i>
+                    My Tasks
+                </a>
+                <a href="schedule.html" class="menu-item">
+                    <i class="fas fa-calendar"></i>
+                    Schedule
+                </a>
+                <a href="staff_notification.html" class="menu-item">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </a>
+                <a href="staff_Profile.html" class="menu-item">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+            </div>
+        </aside>
+        <br>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="notifications-container">
+            <!-- Notifications List -->
+            <div class="notifications-list">
+                <div class="notification-header">
+                    <h2>Notifications</h2>
+                    <button class="btn btn-primary">Mark All Read</button>
+                </div>
+
+                <!-- Notification Items -->
+                <div class="notification-item" data-id="1" data-type="task">
+                    <div class="notification-icon">
+                        <i class="fas fa-tasks icon-task"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            New Task Assigned
+                            <span class="notification-status status-unread">Unread</span>
+                        </div>
+                        <div class="notification-description">
+                            You have been assigned to the brake system repair for Fleet Services truck
+                        </div>
+                        <div class="notification-time">2 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-id="2" data-type="alert">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle icon-alert"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            Urgent Maintenance Required
+                            <span class="notification-status status-unread">Unread</span>
+                        </div>
+                        <div class="notification-description">
+                            Critical engine diagnostic needed for Johnson Logistics truck
+                        </div>
+                        <div class="notification-time">4 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-id="3" data-type="update">
+                    <div class="notification-icon">
+                        <i class="fas fa-sync icon-update"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            System Update Available
+                            <span class="notification-status status-read">Read</span>
+                        </div>
+                        <div class="notification-description">
+                            New software version 2.1 with improved task tracking features
+                        </div>
+                        <div class="notification-time">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Filters & Details -->
+            <div>
+                <!-- Notification Filters -->
+                <div class="notification-filters">
+                    <h3>Filters</h3>
+                    <div class="filter-option active" data-filter="all">
+                        <i class="fas fa-globe"></i>
+                        All Notifications
+                    </div>
+                    <div class="filter-option" data-filter="task">
+                        <i class="fas fa-tasks"></i>
+                        Task Notifications
+                    </div>
+                    <div class="filter-option" data-filter="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Urgent Alerts
+                    </div>
+                    <div class="filter-option" data-filter="update">
+                        <i class="fas fa-sync"></i>
+                        System Updates
+                    </div>
+                </div>
+
+                <!-- Notification Details -->
+                <div class="notification-details" id="notificationDetails">
+                    <h3>Notification Details</h3>
+                    <p>Click on a notification to view more details.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const filterOptions = document.querySelectorAll('.filter-option');
+const notificationItems = document.querySelectorAll('.notification-item');
+const notificationDetails = document.getElementById('notificationDetails');
+const profile = document.querySelector('.profile');
+const dropdown = document.querySelector('.dropdown__wrapper');
+const markAllReadBtn = document.querySelector('.mark-all-read-btn');
+
+// Filter Notifications
+filterOptions.forEach(filter => {
+filter.addEventListener('click', () => {
+filterOptions.forEach(f => f.classList.remove('active'));
+filter.classList.add('active');
+
+const filterType = filter.dataset.filter;
+notificationItems.forEach(item => {
+if (filterType === 'all' || item.dataset.type === filterType) {
+item.style.display = 'flex';
+} else {
+item.style.display = 'none';
+}
+});
+});
+});
+
+// View Notification Details
+notificationItems.forEach(item => {
+item.addEventListener('click', () => {
+const status = item.querySelector('.notification-status');
+if (status) {
+status.textContent = 'Read';
+status.classList.remove('status-unread');
+status.classList.add('status-read');
+}
+
+const title = item.querySelector('.notification-title')?.innerText || '';
+const description = item.querySelector('.notification-description')?.innerText || '';
+const time = item.querySelector('.notification-time')?.innerText || '';
+const type = item.dataset.type;
+
+const icons = {
+task: 'fa-tasks',
+alert: 'fa-exclamation-triangle',
+update: 'fa-sync',
+default: 'fa-info-circle'
+};
+
+const iconClass = icons[type] || icons.default;
+
+notificationDetails.innerHTML = `
+<div class="notification-header">
+    <h3><i class="fas ${iconClass} me-2"></i>${title}</h3>
+</div>
+<div class="notification-body mt-3">
+    <p>${description}</p>
+    <div class="text-muted mt-2">Received: ${time}</div>
+</div>
+`;
+});
+});
+
+// Mark All Notifications as Read
+if (markAllReadBtn) {
+markAllReadBtn.addEventListener('click', () => {
+notificationItems.forEach(item => {
+const status = item.querySelector('.notification-status');
+if (status) {
+status.textContent = 'Read';
+status.classList.remove('status-unread');
+status.classList.add('status-read');
+}
+});
+});
+}
+
+// Profile Dropdown Toggle
+if (profile && dropdown) {
+profile.addEventListener('click', () => {
+dropdown.classList.remove('none');
+dropdown.classList.toggle('hide');
+});
+
+document.addEventListener("click", (event) => {
+const isClickInsideDropdown = dropdown.contains(event.target);
+const isProfileClicked = profile.contains(event.target);
+
+if (!isClickInsideDropdown && !isProfileClicked) {
+dropdown.classList.add('hide');
+}
+});
+}
+});
+
+
+
+                // Mobile menu toggle
+                const mobileMenuBtn = document.createElement('button');
+                mobileMenuBtn.classList.add('mobile-menu');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars">    <img class="icon" src="assets/message.svg" alt="Message"></i>';
+                document.querySelector('.nav-container').appendChild(mobileMenuBtn);
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const sidebar = document.querySelector('.sidebar');
+                sidebar.style.transform =
+                sidebar.style.transform === 'translateX(0%)'
+                ? 'translateX(-100%)'
+                : 'translateX(0%)';
+        });
+
+    </script>
+</body>
+
+</html>

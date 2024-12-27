@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Invoice Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="../styles/dashboard.css" rel="stylesheet">
+        <link rel="stylesheet" href="../style.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #f3f4f6;
+            --border-color: #e5e7eb;
+            --text-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+        }
+
+        .admin-container {
+                     flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .filters-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .invoice-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            color: var(--text-color);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .invoice-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .invoice-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .invoice-table th {
+            background: var(--background-color);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-overdue {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-info {
+            color: var(--text-color);
+        }
+
+        .page-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .filters-section {
+                grid-template-columns: 1fr;
+            }
+
+            .invoice-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+     <!-- Admin Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">TruckFix Pro <span class="admin-badge">Admin</span></div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="../admin/admin_user_mangement_dashboard.html" class="nav-link">User Management</a>
+                <a href="#" class="nav-link">System Settings</a>
+                <a href="#" class="nav-link">Reports</a>
+                <a href="#" class="nav-link">Admin Profile</a>
+            </div>
+
+            <span class="navigation__group">
+                <i class="fas fa-message"></i>
+                <img class="icon" src="../assets/message.svg" alt="Message">
+                <i class="fas fa-bell"></i>
+                <img class="icon" src="../assets/notification.svg" alt="Notification">
+                <img class="profile" src="../imgs/quarm.jpg" alt="Natalia">
+            </span>
+            <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+                <nav>
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                            </svg>
+                            My Profile
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                            </svg>
+                            Account Settings
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                                <path d="M7 20l10 0" />
+                                <path d="M9 16l0 4" />
+                                <path d="M15 16l0 4" />
+                                <path d="M8 12l3 -3l2 2l3 -3" />
+                            </svg> Device Management
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign Out
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <div class="switch__account">
+                        <h2>
+                            Switch Account
+                        </h2>
+                        <ul>
+                            <li class="active">
+                                <img src="assets/natalia.jpg" alt="Natalia">
+                                <div class="user">
+                                    <div class="name">Natalia Taylor</div>
+                                    <div class="email">natalia@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/melissa.jpg" alt="Melissa">
+                                <div class="user">
+                                    <div class="name">Melissa Johnson</div>
+                                    <div class="email">mel@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="sign-out-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign out all accounts
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
+    </nav>
+
+
+
+<!-- Admin Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-menu">
+        <a href="../admin/admin_dashboard.html" class="menu-item">
+            <i class="fas fa-tachometer-alt"></i>
+            Admin Dashboard
+        </a>
+        <a href="../admin/admin_user_mangement_dashboard.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            User Management
+        </a>
+        <a href="../admin/client_management.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            Clients Management
+        </a>
+        <a href="../admin/admin_invoice_mangment.html" class="menu-item">
+            <i class="fas fa-file-invoice"></i>
+            Invoice Management
+        </a>
+        <a href="../admin/admin_receipt_management.html" class="menu-item">
+            <i class="fas fa-file-receipt"></i>
+            Receipt Management
+        </a>
+        <a href="../admin/admin_financial_dashboard.html" class="menu-item">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Financial Overview
+        </a>
+            <a href="../admin/admin_access_control.html" class="menu-item">
+            <i class="fas fa-user-shield"></i>
+            Access Control
+        </a>
+        <a href="../admin/admin_analytics_dashboard.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
+        </a>
+        <a href="../admin/admin_sys_settings.html" class="menu-item">
+            <i class="fas fa-cogs"></i>
+            System Settings
+        </a>
+        <a href="../admin/admin_audit_log.html" class="menu-item">
+            <i class="fas fa-history"></i>
+            Audit Logs
+        </a>
+        <a href="logout.php" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            Log Out
+        </a>
+
+    </div>
+</aside>
+<br>
+<br>
+
+
+
+    <div class="admin-container">
+        <div class="header-section">
+            <h1>Invoice Management</h1>
+            <button class="btn btn-primary" id="createInvoiceBtn">
+                <i class="fas fa-plus"></i> Create Invoice
+            </button>
+        </div>
+
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Date Range</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="filter-group">
+                <label>To</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-group">
+                <label>Amount Range</label>
+                <input type="number" placeholder="Min Amount" id="minAmount">
+            </div>
+            <div class="filter-group">
+                <label>To</label>
+                <input type="number" placeholder="Max Amount" id="maxAmount">
+            </div>
+        </div>
+
+        <div class="invoice-stats">
+            <div class="stat-card">
+                <div class="stat-title">Total Invoices</div>
+                <div class="stat-value" id="totalInvoices">254</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Paid Invoices</div>
+                <div class="stat-value" id="paidInvoices">186</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Pending Amount</div>
+                <div class="stat-value" id="pendingAmount">$12,450</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Overdue Invoices</div>
+                <div class="stat-value" id="overdueInvoices">15</div>
+            </div>
+        </div>
+
+        <div class="invoice-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceTableBody">
+                    <!-- Table content will be dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <div class="page-info">
+                Showing <span id="startRange">1</span> to <span id="endRange">10</span> of <span
+                    id="totalRecords">100</span> invoices
+            </div>
+            <div class="page-buttons">
+                <button class="btn btn-secondary" id="prevPage">Previous</button>
+                <button class="btn btn-primary" id="nextPage">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample invoice data
+        const invoices = [
+            {
+                id: 'INV-2024-001',
+                client: 'Smith Trucking Co.',
+                date: '2024-01-15',
+                dueDate: '2024-01-30',
+                amount: 2500.00,
+                status: 'paid'
+            },
+            {
+                id: 'INV-2024-002',
+                client: 'Johnson Logistics',
+                date: '2024-01-20',
+                dueDate: '2024-02-04',
+                amount: 1800.00,
+                status: 'pending'
+            },
+            {
+                id: 'INV-2024-003',
+                client: 'ABC Transport',
+                date: '2024-01-10',
+                dueDate: '2024-01-25',
+                amount: 3200.00,
+                status: 'overdue'
+            }
+        ];
+
+        // Function to render invoice table
+        function renderInvoiceTable(data = invoices) {
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(invoice => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${invoice.client}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.dueDate}</td>
+                    <td>$${invoice.amount.toFixed(2)}</td>
+                    <td><span class="status-badge status-${invoice.status}">${invoice.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-secondary" onclick="viewInvoice('${invoice.id}')">View</button>
+                        <button class="btn btn-primary" onclick="editInvoice('${invoice.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteInvoice('${invoice.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filter functionality
+        function filterInvoices() {
+            const status = document.getElementById('statusFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const minAmount = document.getElementById('minAmount').value;
+            const maxAmount = document.getElementById('maxAmount').value;
+
+            let filteredInvoices = invoices.filter(invoice => {
+                let matches = true;
+
+                if (status && invoice.status !== status) matches = false;
+                if (startDate && invoice.date < startDate) matches = false;
+                if (endDate && invoice.date > endDate) matches = false;
+                if (minAmount && invoice.amount < minAmount) matches = false;
+                if (maxAmount && invoice.amount > maxAmount) matches = false;
+
+                return matches;
+            });
+
+            renderInvoiceTable(filteredInvoices);
+        }
+
+        // Add event listeners to filter inputs
+        document.getElementById('statusFilter').addEventListener('change', filterInvoices);
+        document.getElementById('startDate').addEventListener('change', filterInvoices);
+        document.getElementById('endDate').addEventListener('change', filterInvoices);
+        document.getElementById('minAmount').addEventListener('change', filterInvoices);
+        document.getElementById('maxAmount').addEventListener('change', filterInvoices);
+
+        // Invoice actions
+        function viewInvoice(id) {
+            console.log('Viewing invoice:', id);
+            // Implement view functionality
+        }
+
+        function editInvoice(id) {
+            console.log('Editing invoice:', id);
+            // Implement edit functionality
+        }
+
+        function deleteInvoice(id) {
+            if (confirm('Are you sure you want to delete this invoice?')) {
+                console.log('Deleting invoice:', id);
+                // Implement delete functionality
+            }
+        }
+
+        // Initial render
+        renderInvoiceTable();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruckFix Pro - Invoice Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles/dashboard.css" rel="stylesheet">
+   
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">TruckFix Pro</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Invoices</a>
+                <a href="#" class="nav-link">Clients</a>
+                <a href="#" class="nav-link">Settings</a>
+                <a href="#" class="nav-link">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-file-invoice"></i>
+                Invoices
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                Clients
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-truck"></i>
+                Services
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Overview -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-title">Total Invoices</div>
+                <div class="card-value">245</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Pending Payments</div>
+                <div class="card-value">$12,450</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Clients</div>
+                <div class="card-value">89</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Monthly Revenue</div>
+                <div class="card-value">$45,250</div>
+            </div>
+        </div>
+
+        <!-- Recent Invoices Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Recent Invoices</h2>
+                <button class="btn btn-primary">Create New Invoice</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Client</th>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INV-2024-001</td>
+                        <td>Smith Trucking Co.</td>
+                        <td>Engine Repair</td>
+                        <td>$2,500</td>
+                        <td><span class="badge badge-success">Paid</span></td>
+                        <td>
+                            <button class="btn btn-small">View</button>
+                            <button class="btn btn-small">Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>INV-2024-002</td>
+                        <td>Johnson Logistics</td>
+                        <td>Brake Service</td>
+                        <td>$1,800</td>
+                        <td><span class="badge badge-warning">Pending</span></td>
+                        <td>
+                            <button class="btn btn-small">View</button>
+                            <button class="btn btn-small">Edit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Invoice Creation Modal -->
+    <div class="modal" id="invoiceModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Create New Invoice</h2>
+            <form class="form-container">
+                <div class="form-group">
+                    <label class="form-label">Client</label>
+                    <select class="form-input">
+                        <option>Select Client</option>
+                        <option>Smith Trucking Co.</option>
+                        <option>Johnson Logistics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Service Type</label>
+                    <select class="form-input">
+                        <option>Select Service</option>
+                        <option>Engine Repair</option>
+                        <option>Brake Service</option>
+                        <option>Tire Replacement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" placeholder="Enter amount">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Invoice</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="JS/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice - TruckFix Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+                            <link rel="stylesheet" href="../style.css">
+                            <link rel="stylesheet" href="../styles/staff.css">
+    <style>
+
+
+        /* Invoice Creation Specific Styles */
+        .invoice-creation-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .invoice-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-sidebar {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+        }
+
+        .service-line-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr 0.5fr;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--staff-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .invoice-summary {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+          .print-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .print-preview-content {
+            background: white;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Styles for the invoice template */
+        .invoice-template {
+            padding: 30px;
+            background: white;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .company-details {
+            flex: 1;
+        }
+
+        .invoice-details {
+            text-align: right;
+        }
+
+        .invoice-body {
+            margin: 20px 0;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .invoice-table th {
+            background: #f5f5f5;
+        }
+
+        .totals {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+         .receipt-preview {
+            flex: 1;
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+         .receipt-preview {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .receipt-preview .text-center {
+        text-align: center;
+    }
+
+    .receipt-preview h2,
+    .receipt-preview h3 {
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .receipt-preview p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .receipt-details {
+        margin-top: 20px;
+    }
+
+    .receipt-info p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .item-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .item-table th,
+    .item-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .item-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .item-table tfoot td {
+        font-weight: bold;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .mt-4 {
+        margin-top: 20px;
+    }
+
+    .mb-4 {
+        margin-bottom: 20px;
+    }
+
+    .notes p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
+    }
+
+        /* Print-specific styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .invoice-template,
+            .invoice-template * {
+                visibility: visible;
+            }
+            .invoice-template {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            .action-buttons {
+                display: none;
+            }
+              .receipt-preview {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .invoice-creation-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Staff Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
+            <div class="nav-links">
+                <a href="staff_dashboard.html" class="nav-link">Dashboard</a>
+                <a href="invoice.html" class="nav-link">Invoices</a>
+                <a href="invoice_creation.html" class="nav-link">Create Invoice</a>
+                <a href="client.html" class="nav-link">Clients</a>
+                <a href="myTask.html" class="nav-link">Tasks</a>
+                <a href="staff_Profile.html" class="nav-link">Profile</a>
+            </div>
+            <span class="navigation__group">
+                <i class="fas fa-message"></i>
+                <img class="icon" src="../assets/message.svg" alt="Message">
+                <i class="fas fa-bell"></i>
+                <img class="icon" src="../assets/notification.svg" alt="Notification">
+                <img class="profile" src="../imgs/quarm.jpg" alt="Natalia">
+            </span>
+            <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+                <nav>
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                            </svg>
+                            My Profile
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                            </svg>
+                            Account Settings
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                             <path d="M7 20l10 0" />
+                    <path d="M9 16l0 4" />
+                    <path d="M15 16l0 4" />
+                    <path d="M8 12l3 -3l2 2l3 -3" />
+                </svg> Device Management
+                </li>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign Out
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <div class="switch__account">
+                        <h2>
+                            Switch Account
+                        </h2>
+                        <ul>
+                            <li class="active">
+                                <img src="assets/natalia.jpg" alt="Natalia">
+                                <div class="user">
+                                    <div class="name">Natalia Taylor</div>
+                                    <div class="email">natalia@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/melissa.jpg" alt="Melissa">
+                                <div class="user">
+                                    <div class="name">Melissa Johnson</div>
+                                    <div class="email">mel@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="sign-out-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign out all accounts
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Staff Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-menu">
+            <a href="staff_dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a href="invoice.html" class="menu-item">
+                <i class="fas fa-file-invoice"></i>
+                Invoices Records
+            </a>
+            <a href="invoice_creation.html" class="menu-item">
+                <i class="fas fa-file"></i>
+                Invoice Creation
+            </a>
+         <a href="receipt.html" class="menu-item">
+                    <i class="fa-solid fa-receipt"></i>
+                    Receipt Records
+                </a>
+                <a href="receipt_creation.html" class="menu-item">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                    Receipt Creation
+                </a>
+            <a href="client.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                Clients
+            </a>
+            <a href="myTask.html" class="menu-item">
+                <i class="fas fa-tasks"></i>
+                My Tasks
+            </a>
+            <a href="schedule.html" class="menu-item">
+                <i class="fas fa-calendar"></i>
+                Schedule
+            </a>
+            <a href="staff_notification.html" class="menu-item">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </a>
+            <a href="staff_Profile.html" class="menu-item">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+        </div>
+    </aside>
+    <br>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="invoice-creation-container">
+            <!-- Invoice Form -->
+            <div class="invoice-form">
+                <h1 class="form-section-title">Create New Invoice</h1>
+
+                <!-- Client Information Section -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Client Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Client Name</label>
+                            <select class="form-select" id="clientSelect">
+                                <option value="">Select Client</option>
+                                <option value="1">Smith Trucking Co.</option>
+                                <option value="2">Johnson Logistics</option>
+                                <option value="new">+ Add New Client</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" class="form-input" id="clientEmail" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-input" id="clientPhone" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Invoice Date</label>
+                            <input type="date" class="form-input" id="invoiceDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Line Items Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <h2 class="form-section-title">Service Line Items</h2>
+                        <button id="addServiceLineBtn" class="btn btn-secondary">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
+                    <div id="serviceLineContainer">
+                        <div class="service-line-item">
+                            <select class="form-select">
+                                <option>Select Service</option>
+                                <option>Engine Repair</option>
+                                <option>Brake Service</option>
+                                <option>Transmission Repair</option>
+                                <option>Tire Replacement</option>
+                            </select>
+                            <input type="number" placeholder="Quantity" class="form-input">
+                            <input type="number" placeholder="Unit Price" class="form-input">
+                            <input type="number" placeholder="Total" class="form-input" readonly>
+                            <button class="btn btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Notes Section -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Additional Notes</h2>
+                    <textarea class="form-input" rows="3"
+                        placeholder="Optional notes or special instructions"></textarea>
+                </div>
+            </div>
+
+            <!-- Invoice Sidebar -->
+            <div class="invoice-sidebar">
+                <!-- Receipt Preview -->
+                <div class="receipt-previe" id="receiptPrevie">
+                    <div class="text-center mb-4">
+                        <h2>TruckFix Pro</h2>
+                        <p>Professional Truck Repair Services</p>
+                        <p>123 Service Road, Mechanic City, MC 12345</p>
+                        <p>Tel: (555) 123-4567</p>
+                    </div>
+                
+                    <div class="receipt-details">
+                        <h3>INVOICE</h3>
+                        <div class="receipt-info">
+                            <p><strong>Client:</strong> <span id="previewReceiptNumber"></span></p>
+                            <p><strong>Email:</strong> <span id="previewDate"></span></p>
+                            <p><strong>Date:</strong> <span id="previewClient"></span></p>
+                            <p><strong>Phone number:</strong> <span id="previewPaymentMethod"></span></p>
+                        </div>
+                
+                      
+                
+                        <div class="notes mt-4">
+                            <p><strong>Notes:</strong></p>
+                            <p id="previewNotes"></p>
+                        </div>
+                
+                       
+                    </div>
+                <div class="invoice-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotalDisplay">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (10%)</span>
+                        <span id="taxDisplay">$0.00</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <strong>Total</strong>
+                        <strong id="totalDisplay">$0.00</strong>
+                    </div>
+                </div>
+                <div class="invoice-actions">
+                    <button class="btn btn-primary btn-block" style="width: 100%; margin-top: 1rem;">
+                        Generate Invoice
+                    </button>
+            <button class="btn btn-secondary btn-block" id="previewPrintInvoiceBtn" style="width: 100%; margin-top: 1rem;">
+                Preview & Print Invoice
+            </button>
+            <div class="footer mt-4 text-center">
+                <p>Thank you for your business!</p>
+            </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Print Preview Modal -->
+        <div class="print-preview-modal" id="printPreviewModal">
+            <div class="print-preview-content">
+                <!-- Invoice Template -->
+                <div class="invoice-template" id="invoiceTemplate">
+                    <div class="invoice-header">
+                        <div class="company-details">
+                            <h2>TruckFix Pro</h2>
+                            <p>123 Repair Street</p>
+                            <p>Mechanic City, MC 12345</p>
+                            <p>Phone: (555) 123-4567</p>
+                        </div>
+                        <div class="invoice-details">
+                            <h2>INVOICE</h2>
+                            <p>Invoice #: <span id="invoiceNumber">INV-2024-001</span></p>
+                            <p>Date: <span id="invoiceDate">26 Dec 2024</span></p>
+                            <p>Due Date: <span id="dueDate">10 Jan 2025</span></p>
+                        </div>
+                    </div>
+        
+                    <div class="invoice-body">
+                        <div class="client-info">
+                            <h3>Bill To:</h3>
+                            <p id="clientName">Smith Trucking Co.</p>
+                            <p id="clientAddress">456 Transport Lane</p>
+                            <p id="clientContact">Contact: John Smith</p>
+                        </div>
+        
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Quantity>
+                                    <th>Unit</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceItems">
+                                <tr>
+                                    <td>Engine Repair - Labor</td>
+                                    <td>4.5</td>
+                                    <td>$85.00</td>
+                                    <td>$382.50</td>
+                                    <td>$382.50</td>
+                                </tr>
+                                <tr>
+                                    <td>Replacement Parts</td>
+                                    <td>1</td>
+                                    <td>$250.00</td>
+                                    <td>$250.00</td>
+                                    <td>$250.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+        
+                        <div class="totals">
+                            <p>Subtotal: <span id="subtotal">$632.50</span></p>
+                            <p>Tax (8%): <span id="tax">$50.60</span></p>
+                            <p><strong>Total: <span id="total">$683.10</span></strong></p>
+                        </div>
+        
+                        <div class="payment-terms">
+                            <h4>Payment Terms</h4>
+                            <p>Please pay within 15 days of invoice date.</p>
+                            <p>Make checks payable to: TruckFix Pro</p>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="closePreviewBtn">Close</button>
+                    <button class="btn btn-primary" id="printInvoiceBtn">Print Invoice</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+
+
+        
+        // Dynamic Client Selection
+        const clientSelect = document.getElementById('clientSelect');
+        const clientEmail = document.getElementById('clientEmail');
+        const clientPhone = document.getElementById('clientPhone');
+
+        const clientData = {
+            '1': { email: 'contact@smithtrucking.com', phone: '(555) 123-4567' },
+            '2': { email: 'info@johnsonlogistics.com', phone: '(555) 987-6543' }
+        };
+
+        clientSelect.addEventListener('change', (e) => {
+            const selectedClient = e.target.value;
+            if (selectedClient in clientData) {
+                clientEmail.value = clientData[selectedClient].email;
+                clientPhone.value = clientData[selectedClient].phone;
+            } else {
+                clientEmail.value = '';
+                clientPhone.value = '';
+            }
+        });
+
+        // Dynamic Service Line Items
+        const serviceLineContainer = document.getElementById('serviceLineContainer');
+        const addServiceLineBtn = document.getElementById('addServiceLineBtn');
+
+        addServiceLineBtn.addEventListener('click', () => {
+            const newServiceLine = serviceLineContainer.querySelector('.service-line-item').cloneNode(true);
+
+            // Reset input values
+            newServiceLine.querySelectorAll('input').forEach(input => input.value = '');
+
+            // Add remove functionality to new line
+            newServiceLine.querySelector('.btn-danger').addEventListener('click', (e) => {
+                e.target.closest('.service-line-item').remove();
+                updateInvoiceSummary();
+            });
+
+            // Add event listeners for calculation
+            newServiceLine.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', updateServiceLineTotal);
+            });
+
+            serviceLineContainer.appendChild(newServiceLine);
+        });
+
+        // Calculate Service Line Total
+        function updateServiceLineTotal(e) {
+            const serviceLine = e.target.closest('.service-line-item');
+            const quantity = serviceLine.querySelector('input:nth-child(2)').value || 0;
+            const unitPrice = serviceLine.querySelector('input:nth-child(3)').value || 0;
+            const totalInput = serviceLine.querySelector('input:nth-child(4)');
+
+            totalInput.value = (quantity * unitPrice).toFixed(2);
+            updateInvoiceSummary();
+        }
+
+        // Update Invoice Summary
+        function updateInvoiceSummary() {
+            const serviceLines = document.querySelectorAll('.service-line-item');
+            let subtotal = 0;
+
+            serviceLines.forEach(line => {
+                const total = parseFloat(line.querySelector('input:nth-child(4)').value) || 0;
+                subtotal += total;
+            });
+
+            const tax = subtotal * 0.10;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotalDisplay').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('taxDisplay').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('totalDisplay').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Initialize event listeners
+        document.querySelectorAll('.service-line-item input[type="number"]').forEach(input => {
+            input.addEventListener('input', updateServiceLineTotal);
+        });
+
+        // Remove Service Line
+        serviceLineContainer.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-danger')) {
+                e.target.closest('.service-line-item').remove();
+                updateInvoiceSummary();
+            }
+        });
+
+
+
+                const profile = document.querySelector('.profile');
+                const dropdown = document.querySelector('.dropdown__wrapper');
+
+    profile.addEventListener('click', () => {
+                    dropdown.classList.remove('none');
+                dropdown.classList.toggle('hide');
+    })
+
+
+    document.addEventListener("click", (event) => {
+        const isClickInsideDropdown = dropdown.contains(event.target);
+                const isProfileClicked = profile.contains(event.target);
+
+                if (!isClickInsideDropdown && !isProfileClicked) {
+                    dropdown.classList.add('hide');
+                dropdown.classList.add('dropdown__wrapper--fade-in');
+        }
+    });
+
+
+
+                // Mobile menu toggle
+                const mobileMenuBtn = document.createElement('button');
+                mobileMenuBtn.classList.add('mobile-menu');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars">    <img class="icon" src="" alt=""></i>';
+                document.querySelector('.nav-container').appendChild(mobileMenuBtn);
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const sidebar = document.querySelector('.sidebar');
+                sidebar.style.transform =
+                sidebar.style.transform === 'translateX(0%)'
+                ? 'translateX(-100%)'
+                : 'translateX(0%)';
+        });
+
+
+                // Function to update the preview with actual invoice data
+                    function updateInvoicePreview(invoiceData) {
+                        // This function would be called with actual invoice data
+                        // For now, using placeholder data
+                        document.getElementById('invoiceNumber').textContent = invoiceData.invoiceNumber || 'INV-2024-001';
+                        document.getElementById('invoiceDate').textContent = invoiceData.date || '26 Dec 2024';
+                        document.getElementById('dueDate').textContent = invoiceData.dueDate || '10 Jan 2025';
+                        document.getElementById('clientName').textContent = invoiceData.clientName || 'Smith Trucking Co.';
+                        document.getElementById('clientAddress').textContent = invoiceData.clientAddress || '456 Transport Lane';
+                        document.getElementById('clientContact').textContent = invoiceData.clientContact || 'Contact: John Smith';
+
+                        // Update invoice items
+                        const tbody = document.getElementById('invoiceItems');
+                        tbody.innerHTML = '';
+                        invoiceData.items.forEach(item => {
+                            tbody.innerHTML += `
+                    <tr>
+                        <td>${item.description}</td>
+                        <td>${item.hours}</td>
+                        <td>$${item.rate.toFixed(2)}</td>
+                        <td>$${(item.hours * item.rate).toFixed(2)}</td>
+                    </tr>
+                `;
+                        });
+
+                        // Update totals
+                        document.getElementById('subtotal').textContent = `$${invoiceData.subtotal.toFixed(2)}`;
+                        document.getElementById('tax').textContent = `$${invoiceData.tax.toFixed(2)}`;
+                        document.getElementById('total').textContent = `$${invoiceData.total.toFixed(2)}`;
+                    }
+
+                    // Function to show the print preview modal
+                    function showPrintPreview(invoiceData) {
+                        const modal = document.getElementById('printPreviewModal');
+                        modal.style.display = 'block';
+                        updateInvoicePreview(invoiceData);
+                    }
+
+                    // Event listener for the preview & print button
+                    document.getElementById('previewPrintInvoiceBtn').addEventListener('click', () => {
+                        // Sample invoice data - replace with actual data from your system
+                        const sampleInvoiceData = {
+                            invoiceNumber: 'INV-2024-001',
+                            date: '26 Dec 2024',
+                            dueDate: '10 Jan 2025',
+                            clientName: 'Smith Trucking Co.',
+                            clientAddress: '456 Transport Lane',
+                            clientContact: 'Contact: John Smith',
+                            items: [
+                                {
+                                    description: 'Engine Repair - Labor',
+                                    hours: 4.5,
+                                    rate: 85.00
+                                },
+                                {
+                                    description: 'Replacement Parts',
+                                    hours: 1,
+                                    rate: 250.00
+                                }
+                            ],
+                            subtotal: 632.50,
+                            tax: 50.60,
+                            total: 683.10
+                        };
+                        showPrintPreview(sampleInvoiceData);
+                    });
+
+                    // Event listener for the print button
+                    document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+                        window.print();
+                    });
+
+                    // Event listener for the close button
+                    document.getElementById('closePreviewBtn').addEventListener('click', () => {
+                        document.getElementById('printPreviewModal').style.display = 'none';
+                    });
+
+                    // Close modal when clicking outside
+                    window.addEventListener('click', (event) => {
+                        const modal = document.getElementById('printPreviewModal');
+                        if (event.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+
+
+
+    
+
+    </script>
+</body>
+
+</html>

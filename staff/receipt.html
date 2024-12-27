@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../style.css">
+        <link rel="stylesheet" href="../styles/staff.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        .container {
+              flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-void {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: white;
+        }
+        .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.receipt {
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.receipt-details {
+    margin: 15px 0;
+}
+
+.receipt-items {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    margin: 10px 0;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .receipt, .receipt * {
+        visibility: visible;
+    }
+    .receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+<!-- Staff Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
+        <div class="nav-links">
+            <a href="staff_dashboard.html" class="nav-link">Dashboard</a>
+            <a href="invoice.html" class="nav-link">Invoices</a>
+            <a href="invoice_creation.html" class="nav-link">Create Invoice</a>
+            <a href="client.html" class="nav-link">Clients</a>
+            <a href="myTask.html" class="nav-link">Tasks</a>
+            <a href="staff_Profile.html" class="nav-link">Profile</a>
+        </div>
+        <span class="navigation__group">
+            <i class="fas fa-message"></i>
+            <img class="icon" src="assets/message.svg" alt="Message">
+            <i class="fas fa-bell"></i>
+            <img class="icon" src="assets/notification.svg" alt="Notification">
+            <img class="profile" src="imgs/quarm.jpg" alt="Natalia">
+        </span>
+        <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+            <nav>
+                <ul>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                            <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                        </svg>
+                        My Profile
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path
+                                d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                            <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                        </svg>
+                        Account Settings
+                    </li>
+                </ul>
+                <hr class="divider">
+                <ul>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                            <path d="M7 20l10 0" />
+                            <path d="M9 16l0 4" />
+                            <path d="M15 16l0 4" />
+                            <path d="M8 12l3 -3l2 2l3 -3" />
+                        </svg> Device Management
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                            <path d="M15 12h-12l3 -3" />
+                            <path d="M6 15l-3 -3" />
+                        </svg>
+                        Sign Out
+                    </li>
+                </ul>
+                <hr class="divider">
+                <div class="switch__account">
+                    <h2>
+                        Switch Account
+                    </h2>
+                    <ul>
+                        <li class="active">
+                            <img src="assets/natalia.jpg" alt="Natalia">
+                            <div class="user">
+                                <div class="name">Natalia Taylor</div>
+                                <div class="email">natalia@example.com</div>
+                            </div>
+                            <div class="marker">
+                            </div>
+                        </li>
+                        <li>
+                            <img src="assets/melissa.jpg" alt="Melissa">
+                            <div class="user">
+                                <div class="name">Melissa Johnson</div>
+                                <div class="email">mel@example.com</div>
+                            </div>
+                            <div class="marker">
+                            </div>
+                        </li>
+                    </ul>
+                    <button class="sign-out-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                            <path d="M15 12h-12l3 -3" />
+                            <path d="M6 15l-3 -3" />
+                        </svg>
+                        Sign out all accounts
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</nav>
+
+<!-- Staff Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-menu">
+        <a href="staff_dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            Dashboard
+        </a>
+        <a href="invoice.html" class="menu-item">
+            <i class="fas fa-file-invoice"></i>
+            Invoices Records
+        </a>
+        <a href="invoice_creation.html" class="menu-item">
+            <i class="fas fa-file"></i>
+            Invoice Creation
+        </a>
+       <a href="receipt.html" class="menu-item">
+                    <i class="fa-solid fa-receipt"></i>
+                    Receipt Records
+                </a>
+                <a href="receipt_creation.html" class="menu-item">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                    Receipt Creation
+                </a>
+        <a href="client.html" class="menu-item">
+            <i class="fas fa-users"></i>
+            Clients
+        </a>
+        <a href="myTask.html" class="menu-item">
+            <i class="fas fa-tasks"></i>
+            My Tasks
+        </a>
+        <a href="schedule.html" class="menu-item">
+            <i class="fas fa-calendar"></i>
+            Schedule
+        </a>
+        <a href="staff_notification.html" class="menu-item">
+            <i class="fas fa-bell"></i>
+            Notifications
+        </a>
+        <a href="staff_Profile.html" class="menu-item">
+            <i class="fas fa-user"></i>
+            Profile
+        </a>
+    </div>
+</aside>
+<br>
+<br>
+<br>
+
+    
+    <div class="container">
+        <div class="header">
+            <h1>Receipt Management</h1>
+            <button class="btn btn-primary">Create Receipt</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Receipt ID</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>RCP-2024-001</td>
+                    <td>John Smith</td>
+                    <td>2024-01-15</td>
+                    <td>$1,500.00</td>
+                    <td><span class="status status-paid">Paid</span></td>
+                    <td class="actions">
+                        <button class="action-btn btn-primary">View</button>
+                        <button class="action-btn btn-success">Print</button>
+                        <button class="action-btn btn-danger">Email</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>RCP-2024-002</td>
+                    <td>Sarah Johnson</td>
+                   <td>2024-01-16</td>
+                        <td>$2,300.00</td>
+                        <td><span class="status status-pending">Pending</span></td>
+                        <td class="actions">
+                            <button class="action-btn btn-primary">View</button>
+                            <button class="action-btn btn-success">Print</button>
+                            <button class="action-btn btn-danger">Email</button>
+                        </td>
+                </tr>
+                <tr>
+                    <td>RCP-2024-003</td>
+                    <td>Mike Wilson</td>
+                    <td>2024-01-17</td>
+                    <td>$800.00</td>
+                    <td><span class="status status-void">Void</span></td>
+                    <td class="actions">
+                        <button class="action-btn btn-primary">View</button>
+                        <button class="action-btn btn-success">Print</button>
+                        <button class="action-btn btn-danger">Email</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+<script src="../receipt.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruckFix Pro - Analytics Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+        <link rel="stylesheet" href="../style.css">
+        <link href="../styles/dashboard.css" rel="stylesheet">
+    <style>
+      
+
+     
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+       
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: var(--background-color);
+        }
+
+        .menu-item i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .menu-item.active i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card-title {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .stat-card-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .change-positive {
+            color: var(--success-color);
+        }
+
+        .change-negative {
+            color: var(--danger-color);
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+        <!-- Admin Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">TruckFix Pro <span class="admin-badge">Admin</span></div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link">Dashboard</a>
+                    <a href="../admin/admin_user_mangement_dashboard.html" class="nav-link">User Management</a>
+                    <a href="#" class="nav-link">System Settings</a>
+                    <a href="#" class="nav-link">Reports</a>
+                    <a href="#" class="nav-link">Admin Profile</a>
+                </div>
+        
+                <span class="navigation__group">
+                    <i class="fas fa-message"></i>
+                    <img class="icon" src="../assets/message.svg" alt="Message">
+                    <i class="fas fa-bell"></i>
+                    <img class="icon" src="../assets/notification.svg" alt="Notification">
+                    <img class="profile" src="../imgs/quarm.jpg" alt="Natalia">
+                </span>
+                <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+                    <nav>
+                        <ul>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                    <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                    <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                                </svg>
+                                My Profile
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path
+                                        d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                    <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                                </svg>
+                                Account Settings
+                            </li>
+                        </ul>
+                        <hr class="divider">
+                        <ul>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                                    <path d="M7 20l10 0" />
+                                    <path d="M9 16l0 4" />
+                                    <path d="M15 16l0 4" />
+                                    <path d="M8 12l3 -3l2 2l3 -3" />
+                                </svg> Device Management
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M15 12h-12l3 -3" />
+                                    <path d="M6 15l-3 -3" />
+                                </svg>
+                                Sign Out
+                            </li>
+                        </ul>
+                        <hr class="divider">
+                        <div class="switch__account">
+                            <h2>
+                                Switch Account
+                            </h2>
+                            <ul>
+                                <li class="active">
+                                    <img src="assets/natalia.jpg" alt="Natalia">
+                                    <div class="user">
+                                        <div class="name">Natalia Taylor</div>
+                                        <div class="email">natalia@example.com</div>
+                                    </div>
+                                    <div class="marker">
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="assets/melissa.jpg" alt="Melissa">
+                                    <div class="user">
+                                        <div class="name">Melissa Johnson</div>
+                                        <div class="email">mel@example.com</div>
+                                    </div>
+                                    <div class="marker">
+                                    </div>
+                                </li>
+                            </ul>
+                            <button class="sign-out-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M15 12h-12l3 -3" />
+                                    <path d="M6 15l-3 -3" />
+                                </svg>
+                                Sign out all accounts
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        
+        </nav>
+        
+        
+        
+        <!-- Admin Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="../admin/admin_dashboard.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Admin Dashboard
+                </a>
+                <a href="../admin/admin_user_mangement_dashboard.html" class="menu-item">
+                    <i class="fas fa-users-cog"></i>
+                    User Management
+                </a>
+                <a href="../admin/client_management.html" class="menu-item">
+                    <i class="fas fa-users-cog"></i>
+                    Clients Management
+                </a>
+                <a href="../admin/admin_invoice_mangment.html" class="menu-item">
+                    <i class="fas fa-file-invoice"></i>
+                    Invoice Management
+                </a>
+                <a href="../admin/admin_receipt_management.html" class="menu-item">
+                    <i class="fas fa-file-receipt"></i>
+                    Receipt Management
+                </a>
+                <a href="../admin/admin_financial_dashboard.html" class="menu-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Financial Overview
+                </a>
+                            <a href="../admin/admin_access_control.html" class="menu-item">
+                    <i class="fas fa-user-shield"></i>
+                    Access Control
+                </a>
+                <a href="../admin/admin_analytics_dashboard.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </a>
+                <a href="../admin/admin_sys_settings.html" class="menu-item">
+                    <i class="fas fa-cogs"></i>
+                    System Settings
+                </a>
+                <a href="../admin/admin_audit_log.html" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    Audit Logs
+                </a>
+                <a href="logout.php" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Log Out
+                </a>
+        
+            </div>
+        </aside>
+        <br>
+        <br>
+        <br>
+        <br>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Analytics</h1>
+           
+        </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <select class="filter-select">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="365">Last Year</option>
+                </select>
+                <select class="filter-select">
+                    <option value="all">All Services</option>
+                    <option value="repair">Repairs</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="inspection">Inspections</option>
+                </select>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Total Revenue</span>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">$124,563</div>
+                    <div class="stat-change change-positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% vs last period</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Total Services</span>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">1,245</div>
+                    <div class="stat-change change-positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.3% vs last period</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Average Service Time</span>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">4.2 hours</div>
+                    <div class="stat-change change-negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>2.1% vs last period</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Customer Satisfaction</span>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">94.5%</div>
+                    <div class="stat-change change-positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>1.2% vs last period</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+<div class="chart-container">
+    <div class="chart-header">
+        <h3 class="chart-title">Revenue Overview</h3>
+    </div>
+    <div>
+        <p>Total Revenue: $124,563</p>
+        <p>Period: Last 30 Days</p>
+    </div>
+    <div style="background: linear-gradient(to right, #4caf50, #8bc34a); height: 20px; width: 70%; margin: 10px 0;">
+        <span style="font-size: 14px; color: #fff; padding-left: 5px;">70% Target Achieved</span>
+    </div>
+</div>
+
+
+            <!-- Service Distribution Chart -->
+<div class="chart-container">
+    <div class="chart-header">
+        <h3 class="chart-title">Service Distribution</h3>
+    </div>
+    <ul style="list-style: none; padding: 0;">
+        <li>Repairs: 60% <div style="background: #ff5722; height: 10px; width: 60%; margin-top: 5px;"></div>
+        </li>
+        <li>Maintenance: 25% <div style="background: #2196f3; height: 10px; width: 25%; margin-top: 5px;"></div>
+        </li>
+        <li>Inspections: 15% <div style="background: #ffc107; height: 10px; width: 15%; margin-top: 5px;"></div>
+        </li>
+    </ul>
+</div>
+
+
+            <!-- Top Services Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service Type</th>
+                            <th>Total Orders</th>
+                            <th>Revenue</th>
+                            <th>Avg. Time</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Engine Repair</td>
+                            <td>342</td>
+                            <td>$45,600</td>
+                            <td>5.2 hours</td>
+                            <td>96%</td>
+                        </tr>
+                        <tr>
+                            <td>Brake Service</td>
+                            <td>287</td>
+                            <td>$28,700</td>
+                            <td>2.8 hours</td>
+                            <td>98%</td>
+                        </tr>
+                        <tr>
+                            <td>Tire Replacement</td>
+                            <td>256</td>
+                            <td>$25,600</td>
+                            <td>1.5 hours</td>
+                            <td>99%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+         <script>
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [65000, 75000, 68000, 85000, 82000, 90000],
+                    borderColor: '#2563eb',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => '$' + value.toLocaleString()
+                        }
+                    }
+                }
+            }
+        });
+
+        // Service Distribution Chart
+        const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+        new Chart(serviceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Engine Repair', 'Brake Service', 'Tire Replacement', 'Other'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#6b7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Filter change handlers
+       document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', event => {
+                const value = event.target.value;
+                // Add your filtering logic here based on the value
+                console.log(`Filter changed to: ${value}`);
+            });
+        });
+    </script>
+</body>

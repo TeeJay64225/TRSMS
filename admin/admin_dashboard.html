@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruckFix Pro - Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../styles/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --admin-color: #7c3aed;
+            --admin-hover: #6d28d9;
+            --background-color: #f3f4f6;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Admin-specific styling */
+        .admin-badge {
+            background-color: var(--admin-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--admin-color);
+        }
+
+        /* Enhanced Admin Controls */
+        .admin-controls {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-controls-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--admin-color);
+        }
+
+        .admin-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .admin-control-item {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-control-item:hover {
+            background-color: var(--admin-color);
+            color: white;
+        }
+
+        /* Rest of your existing styles */
+
+
+        /* Additional Admin-specific styles */
+        .user-management-table {
+            margin-top: 1.5rem;
+        }
+
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-action-btn {
+            background-color: var(--admin-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .admin-action-btn:hover {
+            background-color: var(--admin-hover);
+        }
+
+        table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <!-- Admin Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">TruckFix Pro <span class="admin-badge">Admin</span></div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="../admin/admin_user_mangement_dashboard.html" class="nav-link">User Management</a>
+                <a href="#" class="nav-link">System Settings</a>
+                <a href="#" class="nav-link">Reports</a>
+                <a href="#" class="nav-link">Admin Profile</a>
+            </div>
+
+            <span class="navigation__group">
+                <i class="fas fa-message"></i>
+                <img class="icon" src="../assets/message.svg" alt="Message">
+                <i class="fas fa-bell"></i>
+                <img class="icon" src="../assets/notification.svg" alt="Notification">
+                <img class="profile" src="../imgs/quarm.jpg" alt="Natalia">
+            </span>
+            <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+                <nav>
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                                <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                            </svg>
+                            My Profile
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                            </svg>
+                            Account Settings
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <ul>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                                <path d="M7 20l10 0" />
+                                <path d="M9 16l0 4" />
+                                <path d="M15 16l0 4" />
+                                <path d="M8 12l3 -3l2 2l3 -3" />
+                            </svg> Device Management
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign Out
+                        </li>
+                    </ul>
+                    <hr class="divider">
+                    <div class="switch__account">
+                        <h2>
+                            Switch Account
+                        </h2>
+                        <ul>
+                            <li class="active">
+                                <img src="assets/natalia.jpg" alt="Natalia">
+                                <div class="user">
+                                    <div class="name">Natalia Taylor</div>
+                                    <div class="email">natalia@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/melissa.jpg" alt="Melissa">
+                                <div class="user">
+                                    <div class="name">Melissa Johnson</div>
+                                    <div class="email">mel@example.com</div>
+                                </div>
+                                <div class="marker">
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="sign-out-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                <path d="M15 12h-12l3 -3" />
+                                <path d="M6 15l-3 -3" />
+                            </svg>
+                            Sign out all accounts
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
+    </nav>
+
+
+
+<!-- Admin Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-menu">
+        <a href="../admin/admin_dashboard.html" class="menu-item">
+            <i class="fas fa-tachometer-alt"></i>
+            Admin Dashboard
+        </a>
+        <a href="../admin/admin_user_mangement_dashboard.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            User Management
+        </a>
+        <a href="../admin/client_management.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            Clients Management
+        </a>
+        <a href="../admin/admin_invoice_mangment.html" class="menu-item">
+            <i class="fas fa-file-invoice"></i>
+            Invoice Management
+        </a>
+        <a href="../admin/admin_receipt_management.html" class="menu-item">
+            <i class="fas fa-file-receipt"></i>
+            Receipt Management
+        </a>
+        <a href="../admin/admin_financial_dashboard.html" class="menu-item">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Financial Overview
+        </a>
+            <a href="../admin/admin_access_control.html" class="menu-item">
+            <i class="fas fa-user-shield"></i>
+            Access Control
+        </a>
+        <a href="../admin/admin_analytics_dashboard.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
+        </a>
+        <a href="../admin/admin_sys_settings.html" class="menu-item">
+            <i class="fas fa-cogs"></i>
+            System Settings
+        </a>
+        <a href="../admin/admin_audit_log.html" class="menu-item">
+            <i class="fas fa-history"></i>
+            Audit Logs
+        </a>
+        <a href="logout.php" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            Log Out
+        </a>
+
+    </div>
+</aside>
+<br>
+<br>
+
+    <!-- Admin Main Content -->
+    <main class="main-content">
+        <!-- Quick Actions Panel -->
+        <div class="admin-controls">
+            <h2 class="admin-controls-title">Quick Actions</h2>
+            <div class="admin-controls-grid">
+                <div class="admin-control-item">
+                    <i class="fas fa-user-plus"></i>
+                    Add New User
+                </div>
+                <div class="admin-control-item">
+                    <i class="fas fa-key"></i>
+                    Manage Permissions
+                </div>
+                <div class="admin-control-item">
+                    <i class="fas fa-database"></i>
+                    Backup System
+                </div>
+                <div class="admin-control-item">
+                    <i class="fas fa-envelope"></i>
+                    System Notifications
+                </div>
+            </div>
+        </div>
+
+        <!-- System Overview -->
+        <div class="system-stats">
+            <div class="stat-card">
+                <h3>Active Users</h3>
+                <p class="stat-value">24</p>
+                <p class="stat-change">+3 this week</p>
+            </div>
+            <div class="stat-card">
+                <h3>System Usage</h3>
+                <p class="stat-value">87%</p>
+                <p class="stat-change">Normal load</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Approvals</h3>
+                <p class="stat-value">7</p>
+                <p class="stat-change">5 user requests</p>
+            </div>
+            <div class="stat-card">
+                <h3>Last Backup</h3>
+                <p class="stat-value">2 hours ago</p>
+                <p class="stat-change">All systems normal</p>
+            </div>
+        </div>
+
+        <!-- User Management Table -->
+        <div class="table-container user-management-table">
+            <div class="table-header">
+                <h2>System Users</h2>
+                <button class="admin-action-btn">Add New User</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Last Active</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>john.doe</td>
+                        <td>Staff</td>
+                        <td>2 hours ago</td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-user">Edit</button>
+                            <button class="btn btn-small btn-danger">Disable</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>jane.smith</td>
+                        <td>Manager</td>
+                        <td>1 day ago</td>
+                        <td><span class="badge badge-warning">Away</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-user">Edit</button>
+                            <button class="btn btn-sm btn-danger">Disable</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+<br>
+        <!-- System Logs -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Recent System Activities</h2>
+                <button class="admin-action-btn">View All Logs</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-03-16 14:30</td>
+                        <td>john.doe</td>
+                        <td>Invoice Created</td>
+                        <td>Created invoice #INV-2024-001</td>
+                    </tr>
+                    <tr>
+                        <td>2024-03-16 14:15</td>
+                        <td>system</td>
+                        <td>Backup Completed</td>
+                        <td>Automatic system backup</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../JS/dashboard.js">
+    
+    </script>
+ 
+
+</body>
+
+</html>

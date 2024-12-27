@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruckFix Pro - Report Generation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+        <link href="../styles/dashboard.css" rel="stylesheet">
+        <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Reusing previous CSS with additional report-specific styles */
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f3f4f6;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        /* Previous CSS styles remain the same */
+        .report-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .report-filters > * {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .report-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .report-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-stat {
+            background-color: var(--background-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .summary-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
+
+        .detailed-report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .detailed-report-table th, 
+        .detailed-report-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .report-type-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-type-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .report-type-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar (Same as previous pages) -->
+<!-- Admin Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">TruckFix Pro <span class="admin-badge">Admin</span></div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Dashboard</a>
+            <a href="../admin/admin_user_mangement_dashboard.html" class="nav-link">User Management</a>
+            <a href="#" class="nav-link">System Settings</a>
+            <a href="#" class="nav-link">Reports</a>
+            <a href="#" class="nav-link">Admin Profile</a>
+        </div>
+
+        <span class="navigation__group">
+            <i class="fas fa-message"></i>
+            <img class="icon" src="../assets/message.svg" alt="Message">
+            <i class="fas fa-bell"></i>
+            <img class="icon" src="../assets/notification.svg" alt="Notification">
+            <img class="profile" src="../imgs/quarm.jpg" alt="Natalia">
+        </span>
+        <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
+            <nav>
+                <ul>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                            <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                        </svg>
+                        My Profile
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path
+                                d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                            <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                        </svg>
+                        Account Settings
+                    </li>
+                </ul>
+                <hr class="divider">
+                <ul>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
+                            <path d="M7 20l10 0" />
+                            <path d="M9 16l0 4" />
+                            <path d="M15 16l0 4" />
+                            <path d="M8 12l3 -3l2 2l3 -3" />
+                        </svg> Device Management
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                            <path d="M15 12h-12l3 -3" />
+                            <path d="M6 15l-3 -3" />
+                        </svg>
+                        Sign Out
+                    </li>
+                </ul>
+                <hr class="divider">
+                <div class="switch__account">
+                    <h2>
+                        Switch Account
+                    </h2>
+                    <ul>
+                        <li class="active">
+                            <img src="assets/natalia.jpg" alt="Natalia">
+                            <div class="user">
+                                <div class="name">Natalia Taylor</div>
+                                <div class="email">natalia@example.com</div>
+                            </div>
+                            <div class="marker">
+                            </div>
+                        </li>
+                        <li>
+                            <img src="assets/melissa.jpg" alt="Melissa">
+                            <div class="user">
+                                <div class="name">Melissa Johnson</div>
+                                <div class="email">mel@example.com</div>
+                            </div>
+                            <div class="marker">
+                            </div>
+                        </li>
+                    </ul>
+                    <button class="sign-out-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                            <path d="M15 12h-12l3 -3" />
+                            <path d="M6 15l-3 -3" />
+                        </svg>
+                        Sign out all accounts
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+</nav>
+
+
+
+<!-- Admin Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-menu">
+        <a href="../admin/admin_dashboard.html" class="menu-item">
+            <i class="fas fa-tachometer-alt"></i>
+            Admin Dashboard
+        </a>
+        <a href="../admin/admin_user_mangement_dashboard.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            User Management
+        </a>
+        <a href="../admin/client_management.html" class="menu-item">
+            <i class="fas fa-users-cog"></i>
+            Clients Management
+        </a>
+        <a href="../admin/admin_invoice_mangment.html" class="menu-item">
+            <i class="fas fa-file-invoice"></i>
+            Invoice Management
+        </a>
+        <a href="../admin/admin_receipt_management.html" class="menu-item">
+            <i class="fas fa-file-receipt"></i>
+            Receipt Management
+        </a>
+        <a href="../admin/admin_financial_dashboard.html" class="menu-item">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Financial Overview
+        </a>
+        <a href="../admin/admin_access_control.html" class="menu-item">
+            <i class="fas fa-user-shield"></i>
+            Access Control
+        </a>
+        <a href="../admin/admin_analytics_dashboard.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            Analytics
+        </a>
+        <a href="../admin/admin_sys_settings.html" class="menu-item">
+            <i class="fas fa-cogs"></i>
+            System Settings
+        </a>
+        <a href="../admin/admin_audit_log.html" class="menu-item">
+            <i class="fas fa-history"></i>
+            Audit Logs
+        </a>
+        <a href="logout.php" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            Log Out
+        </a>
+
+    </div>
+</aside>
+<br>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Report Generation</h2>
+            </div>
+
+            <!-- Report Type Selector -->
+            <div class="report-type-selector">
+                <button class="report-type-btn active" data-report="financial">Financial Reports</button>
+                <button class="report-type-btn" data-report="service">Service Reports</button>
+                <button class="report-type-btn" data-report="client">Client Reports</button>
+            </div>
+
+            <!-- Report Filters -->
+            <div class="report-filters">
+                <select class="form-input">
+                    <option>Select Time Period</option>
+                    <option>Last 30 Days</option>
+                    <option>Last 90 Days</option>
+                    <option>Year to Date</option>
+                    <option>Custom Range</option>
+                </select>
+                <select class="form-input">
+                    <option>All Services</option>
+                    <option>Engine Repair</option>
+                    <option>Brake Service</option>
+                    <option>Tire Replacement</option>
+                </select>
+                <button class="btn btn-primary">Generate Report</button>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-stat-value">$124,500</div>
+                    <div class="summary-stat-label">Total Revenue</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value">245</div>
+                    <div class="summary-stat-label">Total Services</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value">89</div>
+                    <div class="summary-stat-label">Active Clients</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value">$52,300</div>
+                    <div class="summary-stat-label">Pending Payments</div>
+                </div>
+            </div>
+
+            <!-- Report Grid -->
+            <div class="report-grid">
+                <!-- Revenue Chart -->
+                <div class="report-card">
+                    <div class="report-card-header">
+                        <h3>Monthly Revenue</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="export-options">
+                        <button class="btn btn-small">Export CSV</button>
+                        <button class="btn btn-small">Export PDF</button>
+                    </div>
+                </div>
+
+                <!-- Service Distribution Chart -->
+                <div class="report-card">
+                    <div class="report-card-header">
+                        <h3>Service Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="serviceChart"></canvas>
+                    </div>
+                    <div class="export-options">
+                        <button class="btn btn-small">Export CSV</button>
+                        <button class="btn btn-small">Export PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Report Table -->
+            <div class="report-card mt-4">
+                <div class="report-card-header">
+                    <h3>Detailed Financial Report</h3>
+                </div>
+                <table class="detailed-report-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Revenue</th>
+                            <th>Total Services</th>
+                            <th>Average Service Value</th>
+                            <th>Pending Payments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>January 2024</td>
+                            <td>$45,200</td>
+                            <td>72</td>
+                            <td>$628</td>
+                            <td>$12,500</td>
+                        </tr>
+                        <tr>
+                            <td>February 2024</td>
+                            <td>$52,300</td>
+                            <td>85</td>
+                            <td>$615</td>
+                            <td>$8,900</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Chart.js Configurations
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Revenue',
+                    data: [45200, 52300, 48700, 55600, 50200, 53100],
+                    borderColor: 'rgb(37, 99, 235)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+
+        const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+        new Chart(serviceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Engine Repair', 'Brake Service', 'Tire Replacement', 'Other'],
+                datasets: [{
+                    data: [45, 25, 15, 15],
+                    backgroundColor: [
+                        'rgb(37, 99, 235)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(99, 102, 241)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+
+        // Report Type Selector
+        const reportTypeBtns = document.querySelectorAll('.report-type-btn');
+        reportTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                reportTypeBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                // Here you could add logic to switch report content based on selected type
+                console.log(`Selected report type: ${btn.dataset.report}`);
+            });
+        });
+    </script>
+</body>
+</html>
