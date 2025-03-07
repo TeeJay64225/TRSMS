@@ -210,57 +210,6 @@ switchLink.addEventListener('click', (e) => {
     errorContainer.textContent = '';
 });
 
-// Form submission handler
-authForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorContainer.textContent = '';
-
-    const authData = {
-        phone: phoneInput.value,
-        password: passwordInput.value
-    };
-
-    // Add additional fields for registration
-    if (!isLoginMode) {
-        authData.name = nameInput.value;
-        // Get selected role
-        const selectedRole = Array.from(roleInputs).find(radio => radio.checked).value;
-        authData.role = selectedRole;
-    }
-
-    try {
-        const endpoint = isLoginMode 
-            ? 'https://trsms-db.onrender.com/auth/login' 
-            : 'https://trsms-db.onrender.com/auth/register';
-
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(authData)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Authentication failed');
-        }
-
-        // Store token and user info
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-
-        // Redirect based on role
-        if (data.user.role === 'admin') {
-            window.location.href = '../admin-dashboard';
-        } else {
-            window.location.href = '..//staff-dashboard';
-        }
-    } catch (error) {
-        errorContainer.textContent = error.message;
-    }
-}); 
 
     </script>
 
