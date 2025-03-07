@@ -164,5 +164,105 @@
     </div>
 
     <script src="script.js"> </script>
+    <script>
+    
+const authForm = document.getElementById('auth-form');
+const authTitle = document.getElementById('auth-title');
+const submitBtn = document.getElementById('submit-btn');
+const switchLink = document.getElementById('switch-link');
+const switchText = document.getElementById('switch-text');
+const errorContainer = document.getElementById('error-container');
+
+// Additional form groups
+const nameGroup = document.getElementById('name-group');
+const roleGroup = document.getElementById('role-group');
+
+// Form inputs
+const nameInput = document.getElementById('name');
+const phoneInput = document.getElementById('phone');
+const passwordInput = document.getElementById('password');
+const roleInputs = document.getElementsByName('role');
+
+let isLoginMode = true;
+
+// Toggle between login and register
+switchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    isLoginMode = !isLoginMode;
+
+    if (isLoginMode) {
+        authTitle.textContent = 'Login';
+        submitBtn.textContent = 'Login';
+        nameGroup.style.display = 'none';
+        roleGroup.style.display = 'none';
+        switchText.textContent = "Don't have an account? ";
+        switchLink.textContent = "Register";
+    } else {
+        authTitle.textContent = 'Register';
+        submitBtn.textContent = 'Register';
+        nameGroup.style.display = 'block';
+        roleGroup.style.display = 'block';
+        switchText.textContent = "Already have an account? ";
+        switchLink.textContent = "Login";
+    }
+    
+    // Clear error messages
+    errorContainer.textContent = '';
+});
+
+// Form submission handler
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorContainer.textContent = '';
+
+    const authData = {
+        phone: phoneInput.value,
+        password: passwordInput.value
+    };
+
+    // Add additional fields for registration
+    if (!isLoginMode) {
+        authData.name = nameInput.value;
+        // Get selected role
+        const selectedRole = Array.from(roleInputs).find(radio => radio.checked).value;
+        authData.role = selectedRole;
+    }
+
+    try {
+        const endpoint = isLoginMode 
+            ? 'https://trsms-db.onrender.com/auth/login' 
+            : 'https://trsms-db.onrender.com/auth/register';
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(authData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Authentication failed');
+        }
+
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect based on role
+        if (data.user.role === 'admin') {
+            window.location.href = '../admin-dashboard';
+        } else {
+            window.location.href = '..//staff-dashboard';
+        }
+    } catch (error) {
+        errorContainer.textContent = error.message;
+    }
+}); 
+
+    </script>
+
 </body>
 </html>
