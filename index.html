@@ -1,136 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login System</title>
+    <title>TruckFix Pro - Authentication</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5;
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f3f4f6;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
         }
 
-        .container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .auth-container {
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .auth-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
         }
 
         .form-group {
             margin-bottom: 15px;
         }
 
-        label {
+        .form-label {
             display: block;
             margin-bottom: 5px;
-            font-weight: bold;
+            color: var(--text-color);
         }
 
-        input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
+        .form-input {
             width: 100%;
             padding: 10px;
-            background-color: #1a73e8;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        button:hover {
-            background-color: #1557b0;
+        .btn:hover {
+            background-color: var(--secondary-color);
         }
 
-        .error {
-            color: red;
-            margin-top: 10px;
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .auth-switch a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .role-select {
+            margin-bottom: 15px;
+        }
+
+        .role-select label {
+            display: inline-block;
+            margin-right: 15px;
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" required>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>TruckFix Pro</h1>
+            <p id="auth-title">Login</p>
+        </div>
+
+        <div id="error-container" class="error-message"></div>
+
+        <form id="auth-form" class="auth-form">
+            <div id="name-group" class="form-group" style="display: none;">
+                <label class="form-label">Name</label>
+                <input type="text" id="name" class="form-input" placeholder="Enter your name">
             </div>
+
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" required>
+                <label class="form-label">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="Enter your phone number" required>
             </div>
-            <button type="submit">Login</button>
-            <div id="errorMessage" class="error"></div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+
+            <div id="role-group" class="role-select" style="display: none;">
+                <label>
+                    <input type="radio" name="role" value="staff" checked> Staff
+                </label>
+                <label>
+                    <input type="radio" name="role" value="admin"> Admin
+                </label>
+            </div>
+
+            <button type="submit" class="btn" id="submit-btn">Login</button>
         </form>
+
+        <div class="auth-switch">
+            <span id="switch-text">Don't have an account? </span>
+            <a href="#" id="switch-link">Register</a>
+        </div>
     </div>
 
-    <script>
-        // Sample user data
-        const users = [
-            {
-                phone: "1234567890",
-                password: "staff123",
-                role: "staff"
-            },
-            {
-                phone: "0987654321",
-                password: "admin123",
-                role: "admin"
-            }
-        ];
-
-        // Handle login form submission
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-
-            // Find user
-            const user = users.find(u => u.phone === phone && u.password === password);
-
-            if (user) {
-                // Store login state
-                localStorage.setItem('loggedInUser', JSON.stringify(user));
-
-                // Redirect based on role
-                if (user.role === 'staff') {
-                    window.location.href = '../staff/staff_dashboard.html';
-                } else if (user.role === 'admin') {
-                    window.location.href = '../admin/admin_dashboard.html';
-                }
-            } else {
-                document.getElementById('errorMessage').textContent = 'Invalid phone number or password';
-            }
-        });
-
-        // Check if user is already logged in
-        window.addEventListener('load', function () {
-            const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-
-            if (loggedInUser) {
-                if (user.role === 'staff') {
-                    window.location.href = '../staff/staff_dashboard.html';
-                } else if (user.role === 'admin') {
-                    window.location.href = '../admin/admin_dashboard.html';
-                }
-            }
-        });
-    </script>
+    <script src="script.js"> </script>
 </body>
-
 </html>
