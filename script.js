@@ -52,49 +52,80 @@ switchLink.addEventListener('click', (e) => {
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorContainer.textContent = '';
-
-    const phone = phoneInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!phone || !password) {
-        errorContainer.textContent = "Phone number and password are required.";
-        return;
-    }
-
-    let authData = { phone, password };
-
-    // Registration Mode: Add extra fields
-    if (!isLoginMode) {
-        const name = nameInput.value.trim();
-        const confirmPassword = confirmPasswordInput.value.trim();
-        const role = Array.from(roleInputs).find(radio => radio.checked)?.value;
-
-        if (!name || !confirmPassword || !role) {
-            errorContainer.textContent = "All fields are required.";
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            errorContainer.textContent = "Passwords do not match.";
-            return;
-        }
-
-        authData = { name, phone, password, role };
-    }
+    
+    // Disable submit button to prevent multiple submissions
+    submitBtn.disabled = true;
+    submitBtn.textContent = isLoginMode ? 'Logging in...' : 'Registering...';
 
     try {
-        const endpoint = isLoginMode ? `${BASE_URL}/login` : `${BASE_URL}/register`;
+        const phone = phoneInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!phone || !password) {
+            throw new Error("Phone number and password are required.");
+        }
+
+        let authData = { phone, password };
+        let endpoint = `${BASE_URL}/login`;
+
+        // Registration Mode: Add extra fields
+        if (!isLoginMode) {
+            const name = nameInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+            const role = Array.from(roleInputs).find(radio => radio.checked)?.value;
+
+            if (!name) {
+                throw new Error("Name is required.");
+            }
+            
+            if (!role) {
+                throw new Error("Please select a role.");
+            }
+
+            if (!confirmPassword) {
+                throw new Error("Please confirm your password.");
+            }
+
+            if (password !== confirmPassword) {
+                throw new Error("Passwords do not match.");
+            }
+
+            authData = { 
+                name, 
+                phone, 
+                password, 
+                role 
+            };
+            
+            endpoint = `${BASE_URL}/register`;
+            
+            console.log("Sending registration data:", authData);
+        }
 
         const response = await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify(authData)
         });
 
-        const data = await response.json();
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        let data;
+        
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            // Handle non-JSON response
+            const textResponse = await response.text();
+            console.log("Non-JSON response:", textResponse);
+            data = { error: "Unexpected server response" };
+        }
 
         if (!response.ok) {
-            throw new Error(data.error || 'Authentication failed');
+            throw new Error(data.error || data.message || `Authentication failed (${response.status})`);
         }
 
         if (isLoginMode) {
@@ -107,15 +138,28 @@ authForm.addEventListener('submit', async (e) => {
                 ? '../admin/admin_dashboard.html' 
                 : '../staff/staff_dashboard.html';
         } else {
-            alert("Registration successful! Redirecting to login...");
-            switchLink.click(); // Switch to login mode automatically
+            // Registration successful
+            alert("Registration successful! You can now log in.");
+            isLoginMode = true;
+            authTitle.textContent = 'Login';
+            submitBtn.textContent = 'Login';
+            nameGroup.style.display = 'none';
+            roleGroup.style.display = 'none';
+            confirmPasswordGroup.style.display = 'none';
+            switchText.textContent = "Don't have an account? ";
+            switchLink.textContent = "Register";
         }
 
         // Clear form after success
         authForm.reset();
 
     } catch (error) {
-        errorContainer.textContent = error.message;
+        console.error("Authentication error:", error);
+        errorContainer.textContent = error.message || "An unexpected error occurred";
+    } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = isLoginMode ? 'Login' : 'Register';
     }
 });
 
