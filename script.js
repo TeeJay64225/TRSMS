@@ -19,7 +19,7 @@ document.addEventListener("click", (event) => {
 });
 
 //reliable
-const BASE_URL = "https://trsms-db.onrender.com/auth"; // Replace with your actual backend URL
+const BASE_URL = "https://trsms-db.onrender.com/api/user"; // Replace with your actual backend URL
 
 // User Registration
 document.addEventListener('DOMContentLoaded', () => {
@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/register`, {
+           
+
+                const response = await fetch("https://trsms-db.onrender.com/api/user/register", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, phone, password, role })
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const loginMessage = document.getElementById('loginMessage');
 
             try {
-                const response = await fetch(`${BASE_URL}/login`, {
+                const response = await fetch("https://trsms-db.onrender.com/api/user/login", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phone, password })
