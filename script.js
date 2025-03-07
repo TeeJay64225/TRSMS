@@ -1,14 +1,4 @@
-
-
-document.addEventListener("click", (event) => {
-    const isClickInsideDropdown = dropdown.contains(event.target);
-    const isProfileClicked = profile.contains(event.target);
-
-    if (!isClickInsideDropdown && !isProfileClicked) {
-        dropdown.classList.add('hide');
-        dropdown.classList.add('dropdown__wrapper--fade-in');
-    }
-});
+    
 const authForm = document.getElementById('auth-form');
 const authTitle = document.getElementById('auth-title');
 const submitBtn = document.getElementById('submit-btn');
@@ -18,14 +8,12 @@ const errorContainer = document.getElementById('error-container');
 
 // Additional form groups
 const nameGroup = document.getElementById('name-group');
-const confirmPasswordGroup = document.getElementById('confirm-password-group');
 const roleGroup = document.getElementById('role-group');
 
 // Form inputs
 const nameInput = document.getElementById('name');
 const phoneInput = document.getElementById('phone');
 const passwordInput = document.getElementById('password');
-const confirmPasswordInput = document.getElementById('confirmPassword');
 const roleInputs = document.getElementsByName('role');
 
 let isLoginMode = true;
@@ -39,22 +27,21 @@ switchLink.addEventListener('click', (e) => {
     if (isLoginMode) {
         authTitle.textContent = 'Login';
         submitBtn.textContent = 'Login';
-        nameGroup.classList.add('hidden');
-        confirmPasswordGroup.classList.add('hidden');
-        roleGroup.classList.add('hidden');
+        nameGroup.style.display = 'none';
+        roleGroup.style.display = 'none';
         switchText.textContent = "Don't have an account? ";
         switchLink.textContent = "Register";
     } else {
         authTitle.textContent = 'Register';
         submitBtn.textContent = 'Register';
-        nameGroup.classList.remove('hidden');
-        confirmPasswordGroup.classList.remove('hidden');
-        roleGroup.classList.remove('hidden');
+        nameGroup.style.display = 'block';
+        roleGroup.style.display = 'block';
         switchText.textContent = "Already have an account? ";
         switchLink.textContent = "Login";
     }
-
-    errorContainer.textContent = ''; // Clear error messages
+    
+    // Clear error messages
+    errorContainer.textContent = '';
 });
 
 // Form submission handler
