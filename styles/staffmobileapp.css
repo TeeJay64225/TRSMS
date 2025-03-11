@@ -1,0 +1,206 @@
+                /* Mobile Navigation Styles */
+                .mobile-nav {
+                    display: none; /* Hidden by default on desktop */
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    background-color: white;
+                    border-top: 2px solid var(--staff-color);
+                    z-index: 1000;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                }
+        
+                .mobile-nav-container {
+                    display: flex;
+                    justify-content: space-around;
+                    padding: 10px 0;
+                }
+        
+                .mobile-nav-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-decoration: none;
+                    color: var(--text-color);
+                    font-size: 0.75rem;
+                }
+        
+                .mobile-nav-item i {
+                    font-size: 1.25rem;
+                    margin-bottom: 4px;
+                    color: var(--staff-color);
+                }
+        
+                .mobile-nav-item.active {
+                    color: var(--staff-color);
+                    font-weight: bold;
+                }
+        
+                .menu-toggle {
+                    display: none;
+                    align-items: center;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0.5rem;
+                }
+        
+                .menu-toggle i {
+                    font-size: 1.5rem;
+                    color: var(--staff-color);
+                }
+        
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .sidebar {
+                        transform: translateX(-100%);
+                        transition: transform 0.3s ease;
+                    }
+        
+                    .sidebar.active {
+                        transform: translateX(0);
+                    }
+        
+                    .main-content {
+                        margin-left: 0;
+                        padding-bottom: 70px; /* Make room for mobile nav */
+                    }
+        
+                    .mobile-nav {
+                        display: block;
+                    }
+        
+                    .menu-toggle {
+                        display: flex;
+                    }
+        
+                    .nav-container {
+                        justify-content: space-between;
+                    }
+        
+                    .nav-links {
+                        display: none;
+                    }
+        
+                    /* Show sidebar overlay */
+                    .sidebar-overlay {
+                        display: none;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0,0,0,0.5);
+                        z-index: 900;
+                    }
+        
+                    .sidebar-overlay.active {
+                        display: block;
+                    }
+                }
+
+                /* Existing table styles */
+.table-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden; /* Ensures the border radius is applied to children */
+}
+
+.table-header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Mobile card styles */
+.mobile-cards {
+    display: none;
+}
+
+.invoice-card {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+}
+
+.invoice-card:last-child {
+    border-bottom: none;
+}
+
+.invoice-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.invoice-id {
+    font-weight: bold;
+    color: var(--staff-color);
+}
+
+.invoice-card-body {
+    margin-bottom: 0.75rem;
+}
+
+.invoice-detail {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.detail-label {
+    font-weight: 500;
+    width: 70px;
+    color: var(--text-color);
+}
+
+.detail-value {
+    flex: 1;
+}
+
+.invoice-card-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    .desktop-table {
+        display: none;
+    }
+    
+    .mobile-cards {
+        display: block;
+    }
+}
+.container {
+    margin-left: 0;
+}
+
+/* Optional: Table scrolling for medium screens */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .desktop-table {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+}
+
+

@@ -8,160 +8,175 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
             <link rel="stylesheet" href="../style.css">
             <link rel="stylesheet" href="../styles/staff.css">
+            <link rel="stylesheet" href="../styles/staffmobileapp.css">
     <style>
 
         .container {
-            max-width: 1200px;
+        
               margin-left: 250px;
-            padding: 5rem 2rem 2rem;
+            padding: 2rem;
         }
-
-        .invoice-header {
+/* Header */
+.invoice-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .invoice-filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .invoice-header h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
         }
 
-        .filter-input {
-            display: flex;
-            align-items: center;
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-input input {
-            border: none;
-            outline: none;
-            margin-left: 0.5rem;
-            width: 200px;
-        }
-
+        /* Buttons */
         .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
             border: none;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-secondary {
-            background-color: var(--staff-color);
-            color:  white;
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: #4a6cf7;
             color: white;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-primary:hover {
-            background-color: var(--secondary-color);
+            background-color: #3b5bd9;
         }
 
-        .invoice-table {
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde1e5;
+        }
+
+        /* Filters */
+        .invoice-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            position: relative;
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        .filter-input i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-input input {
+            padding: 8px 8px 8px 32px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+
+        select.btn, input[type="date"].btn {
             background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            border: 1px solid #ced4da;
+            color: #495057;
         }
 
-        .invoice-table table {
+        /* Table */
+        .invoice-table {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .invoice-table th,
-        .invoice-table td {
-            padding: 1rem;
+        th, td {
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #e9ecef;
         }
 
-        .invoice-table th {
-            background-color: #f9fafb;
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
             font-weight: 600;
         }
 
+        /* Status Badges */
         .status-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .status-paid {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
         }
 
         .status-pending {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: var(--warning-color);
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
         }
 
         .status-overdue {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger-color);
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
         }
 
+        /* Action Buttons */
         .action-buttons {
             display: flex;
-            gap: 0.5rem;
+            gap: 5px;
         }
 
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 0.875rem;
+        .action-buttons .btn {
+            padding: 6px 10px;
+            font-size: 12px;
         }
 
-        .action-btn:hover {
-            text-decoration: underline;
-        }
-
+        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
+            gap: 5px;
         }
 
         .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
             background-color: white;
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
+            border-radius: 4px;
             cursor: pointer;
         }
 
         .pagination-btn.active {
-            background-color: var(--primary-color);
+            background-color: #4a6cf7;
             color: white;
+            border-color: #4a6cf7;
         }
 
-        /* Invoice Detail Modal */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -172,62 +187,128 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             overflow-y: auto;
-            padding: 2rem 0;
         }
 
         .modal-content {
             background-color: white;
-            border-radius: 0.5rem;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
             max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
+            width: 90%;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
         }
 
         .invoice-detail-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 20px;
         }
 
-        .close-modal {
-            cursor: pointer;
-            font-size: 1.5rem;
+        .invoice-client-info,
+        .invoice-payment-info,
+        .invoice-services,
+        .invoice-actions {
+            margin-bottom: 20px;
         }
 
-        .invoice-services table {
-            width: 100%;
-            border-collapse: collapse;
+        .invoice-client-info h3,
+        .invoice-payment-info h3,
+        .invoice-services h3,
+        .invoice-actions h3 {
+            margin-bottom: 10px;
+            color: #495057;
         }
 
-        .invoice-services th,
-        .invoice-services td {
-            border: 1px solid var(--border-color);
-            padding: 0.5rem;
+        .invoice-client-info p,
+        .invoice-payment-info p {
+            margin-bottom: 5px;
         }
 
+        .invoice-services {
+            grid-column: span 2;
+        }
+
+        .invoice-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .invoice-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .invoice-header h1 {
+                margin-bottom: 15px;
+            }
+
             .invoice-filters {
                 flex-direction: column;
+                width: 100%;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+            .container {
+        
+        margin-left: 0;
+
+  }
+            /* Hide less important columns */
+            table th:nth-child(3),
+            table td:nth-child(3) {
+                display: none;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .btn {
+                width: 100%;
             }
 
             .invoice-detail-grid {
                 grid-template-columns: 1fr;
             }
-              
 
-            .main-content {
-                margin-left: 0;
+            .invoice-services {
+                grid-column: span 1;
             }
 
-            .nav-links {
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Extremely small screens */
+        @media (max-width: 480px) {
+            table th:nth-child(4),
+            table td:nth-child(4) {
                 display: none;
             }
         }
@@ -238,117 +319,65 @@
     <!-- Sidebar -->
     
 
-    <!-- Staff Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
-            <div class="nav-links">
-                <a href="staff_dashboard.html" class="nav-link">Dashboard</a>
-                <a href="invoice.html" class="nav-link">Invoices</a>
-                <a href="client.html" class="nav-link">Clients</a>
-                <a href="myTask.html" class="nav-link">Tasks</a>
-                <a href="staff_Profile.html" class="nav-link">Profile</a>
-            </div>
-            <span class="navigation__group">
-                <i class="fas fa-message"></i>
-                <img class="icon" src="../assets/message.svg" alt="Message">
-                <i class="fas fa-bell"></i>
-                <img class="icon" src="../assets/notification.svg" alt="Notification">
-                <img class="profile" src="../imgs/quarm.jpg" alt="">
-            </span>
-            <div class="dropdown__wrapper hide dropdown__wrapper--fade-in none">
-                <nav>
-                    <ul>
-                        <li>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-                                <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
-                            </svg>
-                            My Profile
-                        </li>
-                        <li>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path
-                                    d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                                <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-                            </svg>
-                            Account Settings
-                        </li>
-                    </ul>
-                    <hr class="divider">
-                    <ul>
-                        <li>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-device-analytics">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z" />
-                            <path d="M7 20l10 0" />
-                            <path d="M9 16l0 4" />
-                            <path d="M15 16l0 4" />
-                            <path d="M8 12l3 -3l2 2l3 -3" />
-                            </svg> Device Management
-                    </li>
-                    <li>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
-                                <path d="M15 12h-12l3 -3" />
-                                <path d="M6 15l-3 -3" />
-                            </svg>
-                            Sign Out
-                        </li>
-                    </ul>
-                    <hr class="divider">
-                    <div class="switch__account">
-                        <h2>
-                            Switch Account
-                        </h2>
-                        <ul>
-                            <li class="active">
-                                <img src="assets/natalia.jpg" alt="Natalia">
-                                <div class="user">
-                                    <div class="name">Natalia Taylor</div>
-                                    <div class="email">natalia@example.com</div>
-                                </div>
-                                <div class="marker">
-                                </div>
-                            </li>
-                            <li>
-                                <img src="assets/melissa.jpg" alt="Melissa">
-                                <div class="user">
-                                    <div class="name">Melissa Johnson</div>
-                                    <div class="email">mel@example.com</div>
-                                </div>
-                                <div class="marker">
-                                </div>
-                            </li>
-                        </ul>
-                        <button class="sign-out-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
-                                <path d="M15 12h-12l3 -3" />
-                                <path d="M6 15l-3 -3" />
-                            </svg>
-                            Sign out all accounts
-                        </button>
-                    </div>
-                </nav>
-            </div>
+  <!-- Staff Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
+        <div class="nav-links">
+            <a href="staff_dashboard.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <rect x="3" y="3" width="7" height="9"></rect>
+                    <rect x="14" y="3" width="7" height="5"></rect>
+                    <rect x="14" y="12" width="7" height="9"></rect>
+                    <rect x="3" y="16" width="7" height="5"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="invoice.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Invoices
+            </a>
+            <a href="invoice_creation.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                Invoice Creation
+            </a>
+            <a href="client.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Clients
+            </a>
+            <a href="myTask.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                Tasks
+            </a>
+            <a href="staff_Profile.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Profile
+            </a>
         </div>
-    </nav>
+    </div>
+</nav>
     
     <!-- Staff Sidebar -->
 <!-- Staff Sidebar -->
@@ -396,6 +425,32 @@
         </a>
     </div>
 </aside>
+<br>
+ <!-- Mobile Bottom Navigation -->
+ <nav class="mobile-nav">
+    <div class="mobile-nav-container">
+        <a href="staff_dashboard.html" class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+        <a href="invoice.html" class="mobile-nav-item">
+            <i class="fas fa-file-invoice"></i>
+            Invoices
+        </a>
+        <a href="client.html" class="mobile-nav-item">
+            <i class="fas fa-users"></i>
+            Clients
+        </a>
+        <a href="myTask.html" class="mobile-nav-item">
+            <i class="fas fa-tasks"></i>
+            Tasks
+        </a>
+        <a href="staff_Profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            Profile
+        </a>
+    </div>
+</nav>
 
     <!-- Main Content -->
     <main class="main-content"></main>
@@ -627,20 +682,32 @@
     });
 
 
-
-                // Mobile menu toggle
-                const mobileMenuBtn = document.createElement('button');
-                mobileMenuBtn.classList.add('mobile-menu');
-                mobileMenuBtn.innerHTML = '<i class="fas fa-bars">    <img class="icon" src="" alt=""></i>';
-                document.querySelector('.nav-container').appendChild(mobileMenuBtn);
-
-        mobileMenuBtn.addEventListener('click', () => {
-            const sidebar = document.querySelector('.sidebar');
-                sidebar.style.transform =
-                sidebar.style.transform === 'translateX(0%)'
-                ? 'translateX(-100%)'
-                : 'translateX(0%)';
+ // Simple modal functionality
+ document.addEventListener('DOMContentLoaded', function() {
+            const viewButtons = document.querySelectorAll('.btn-primary');
+            const modal = document.getElementById('invoiceDetailModal');
+            const closeButton = document.querySelector('.close-modal');
+            
+            viewButtons.forEach(button => {
+                if (button.textContent.trim() === 'View') {
+                    button.addEventListener('click', function() {
+                        modal.style.display = 'block';
+                    });
+                }
+            });
+            
+            closeButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
         });
+
+
 
     </script>
 </body>

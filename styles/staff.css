@@ -58,15 +58,81 @@
             margin-left: 0.5rem;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
+       /* Navigation Icons Styling */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #4b5563;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-color);
-        }
+.nav-link:hover {
+    background-color: #f3f4f6;
+    color: #2563eb;
+}
+
+.nav-link:hover .nav-icon {
+    stroke: #2563eb;
+}
+
+.nav-icon {
+    stroke: #6b7280;
+    transition: stroke 0.2s ease;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Mobile Navigation Styles */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+        height: auto;
+    }
+    
+    .logo-container {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .nav-links.active {
+        max-height: 500px;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .nav-link {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+}
 
         .sidebar {
             width: 250px;
@@ -107,7 +173,7 @@
 
         .main-content {
             margin-left: 250px;
-            padding: 5rem 2rem 2rem;
+            padding:  2rem;
         }
 
         .quick-actions {
@@ -205,7 +271,7 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        table {
+   table {
             width: 100%;
             border-collapse: collapse;
         }
@@ -408,6 +474,9 @@
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+            }
+            .container {
+                margin-left: 0;
             }
 
             .main-content {
