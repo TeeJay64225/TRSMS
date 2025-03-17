@@ -48,12 +48,13 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Get Form Values
         const clientData = {
-            companyName: companyNameInput.value.trim(),
+            name: companyNameInput.value.trim(), // ✅ Change "companyName" to "name"
             email: emailInput.value.trim(),
             phone: phoneInput.value.trim(),
             status: statusSelect.value,
             sendWelcomeEmail: sendWelcomeEmailCheckbox.checked
         };
+        
 
         // Form Validation
         if (!clientData.companyName || !clientData.email || !clientData.phone) {
