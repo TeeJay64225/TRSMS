@@ -9,7 +9,7 @@ async function fetchTotalUsers() {
         }
 
         // Fetch total user count
-        const response = await fetch('https://trsms-db.onrender.com/api/user/count', {
+        const response = await fetch('https://trsms-db.onrender.com/api/users/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
