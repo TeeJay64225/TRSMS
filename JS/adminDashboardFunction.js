@@ -1,14 +1,34 @@
 async function fetchTotalUsers() {
+    const totalUsersElement = document.getElementById('total-users-count');
+
     try {
-        const response = await fetch('https://trsms-db.onrender.com/api/user'); // Ensure backend route exists
-        if (!response.ok) throw new Error('Network response was not ok');
-        
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('Authentication token missing');
+        }
+
+        // Fetch total user count
+        const response = await fetch('https://trsms-db.onrender.com/api/user/count', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user count');
+        }
+
         const data = await response.json();
-        document.getElementById('totalUsers').textContent = data.totalUsers || "0";
+
+        // Update the UI with total user count
+        totalUsersElement.textContent = data.totalUsers ?? 'N/A';
     } catch (error) {
         console.error('Error fetching total users:', error);
-        document.getElementById('totalUsers').textContent = "Error";
+        totalUsersElement.textContent = 'Error';
     }
 }
 
-fetchTotalUsers();
+document.addEventListener('DOMContentLoaded', fetchTotalUsers);
