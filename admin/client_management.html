@@ -488,42 +488,52 @@
 
 
 
-        <!-- Add Client Modal -->
-        <div id="addClientModal" class="modal">
-            <div class="modal-content">
-                <h2>Add New Client</h2>
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Contact Email</label>
-                        <input type="email" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Client Status</label>
-                        <select class="form-control">
-                            <option>Active</option>
-                            <option>Inactive</option>
-                        </select>
-                    </div>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="sendWelcomeEmail">
-                        <label for="sendWelcomeEmail">Send Welcome Email</label>
-                    </div>
-                    <div class="admin-actions mt-3">
-                        <button type="submit" class="btn btn-primary">Create Client</button>
-                        <button type="button" class="btn btn-danger">Cancel</button>
-                    </div>
-                </form>
-            </div>
+       <!-- Add Client Modal -->
+<div id="addClientModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Client</h2>
+            <span class="close-modal">&times;</span>
         </div>
+        <div class="modal-body">
+            <form id="addClientForm">
+                <div class="form-group">
+                    <label class="form-label" for="clientCompanyName">Company Name</label>
+                    <input type="text" id="clientCompanyName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="clientEmail">Contact Email</label>
+                    <input type="email" id="clientEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="clientPhone">Phone Number</label>
+                    <input type="tel" id="clientPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="clientStatus">Client Status</label>
+                    <select id="clientStatus" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="sendWelcomeEmail">
+                    <label for="sendWelcomeEmail">Send Welcome Email</label>
+                </div>
+                <div id="clientFormError" class="error-message"></div>
+                <div class="admin-actions mt-3">
+                    <button type="submit" class="btn btn-primary">Create Client</button>
+                    <button type="button" class="btn btn-danger">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<!-- Add Client Button (example) -->
+<button id="addClientBtn" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Add New Client
+</button>
 
         
     </div>

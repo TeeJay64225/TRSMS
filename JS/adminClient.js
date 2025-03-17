@@ -1,39 +1,124 @@
- // Modal Functionality
- const addClientBtn = document.getElementById('addClientBtn');
- const addClientModal = document.getElementById('addClientModal');
- const cancelButtons = document.querySelectorAll('.btn-danger');
+document.addEventListener('DOMContentLoaded', function () {
+    // Modal Elements
+    const addClientModal = document.getElementById('addClientModal');
+    const addClientForm = document.getElementById('addClientForm');
+    const cancelButton = addClientModal.querySelector('.btn-danger');
+    const closeModalX = addClientModal.querySelector('.close-modal');
+    const errorMessage = document.getElementById('clientFormError');
+    
+    // Form Inputs
+    const companyNameInput = document.getElementById('clientCompanyName');
+    const emailInput = document.getElementById('clientEmail');
+    const phoneInput = document.getElementById('clientPhone');
+    const statusSelect = document.getElementById('clientStatus');
+    const sendWelcomeEmailCheckbox = document.getElementById('sendWelcomeEmail');
+    
+    // Open Modal Button
+    const addClientBtn = document.getElementById('addClientBtn');
+    if (addClientBtn) addClientBtn.addEventListener('click', openModal);
+    
+    // Open Modal Function
+    function openModal() {
+        addClientModal.style.display = 'flex'; // Use flex for proper centering
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        addClientForm.reset();
+        errorMessage.textContent = '';
+    }
+    
+    // Close Modal Function
+    function closeModal() {
+        addClientModal.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+    
+    // Close Modal Events
+    if (closeModalX) closeModalX.addEventListener('click', closeModal);
+    cancelButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeModal();
+    });
+    window.addEventListener('click', (event) => {
+        if (event.target === addClientModal) closeModal();
+    });
 
- addClientBtn.addEventListener('click', () => {
-     addClientModal.style.display = 'flex';
- });
+    // Form Submission
+    addClientForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        errorMessage.textContent = '';
+        
+        // Get Form Values
+        const clientData = {
+            companyName: companyNameInput.value.trim(),
+            email: emailInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            status: statusSelect.value,
+            sendWelcomeEmail: sendWelcomeEmailCheckbox.checked
+        };
 
- cancelButtons.forEach(btn => {
-     btn.addEventListener('click', () => {
-         addClientModal.style.display = 'none';
-     });
- });
+        // Form Validation
+        if (!clientData.companyName || !clientData.email || !clientData.phone) {
+            errorMessage.textContent = 'All fields are required!';
+            return;
+        }
+        
+        // Email Validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(clientData.email)) {
+            errorMessage.textContent = 'Invalid email address!';
+            return;
+        }
+        
+        // Phone Validation
+        const phonePattern = /^\+?[0-9\s\-\(\)]+$/;
+        if (!phonePattern.test(clientData.phone)) {
+            errorMessage.textContent = 'Invalid phone number!';
+            return;
+        }
+        
+        // Disable Button to Prevent Multiple Clicks
+        const submitButton = addClientForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating...';
 
- // Select All Checkbox
- const selectAllCheckbox = document.getElementById('selectAll');
- const rowSelectCheckboxes = document.querySelectorAll('.row-select');
+        try {
+            // Authentication Token
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Authentication required! Please log in.');
 
- selectAllCheckbox.addEventListener('change', (e) => {
-     rowSelectCheckboxes.forEach(checkbox => {
-         checkbox.checked = e.target.checked;
-     });
- });
+            // Send Data to Server
+            const response = await fetch('https://trsms-db.onrender.com/api/clients/', {  // 🔥 Corrected URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(clientData)
+            });
+            
 
- // Bulk Delete Simulation
- const bulkDeleteBtn = document.querySelector('.btn-danger[data-action="bulk-delete"]');
- if (bulkDeleteBtn) {
-     bulkDeleteBtn.addEventListener('click', () => {
-         const selectedRows = Array.from(rowSelectCheckboxes)
-             .filter(cb => cb.checked)
-             .map(cb => cb.closest('tr'));
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to create client');
 
-         selectedRows.forEach(row => row.remove());
-     });
- }
+            // Success
+            alert('Client created successfully!');
+            closeModal();
+            if (typeof refreshClientList === 'function') refreshClientList();
+            else window.location.reload();
+
+        } catch (error) {
+            console.error('Error:', error);
+            errorMessage.textContent = error.message || 'An error occurred!';
+        } finally {
+            // Re-enable Button
+            submitButton.disabled = false;
+            submitButton.textContent = 'Create Client';
+        }
+    });
+
+    // Expose the openModal function
+    window.openAddClientModal = openModal;
+});
+
 
 
  document.addEventListener('DOMContentLoaded', function() {
