@@ -18,7 +18,7 @@ const confirmPasswordInput = document.getElementById('confirmPassword');
 const roleInputs = document.getElementsByName('role');
 
 let isLoginMode = true;
-const BASE_URL = "https://trsms-db.onrender.com/api/user"; // Ensure consistency
+const BASE_URL = "https://trsms-db.onrender.com/api/auth"; // Ensure consistency
 
 // Toggle between login and register
 switchLink.addEventListener('click', (e) => {
