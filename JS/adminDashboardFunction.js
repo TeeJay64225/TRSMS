@@ -84,9 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-//system Logs
 document.addEventListener("DOMContentLoaded", async () => {
-    const logsTableBody = document.querySelector(".table-container tbody");
+    const logsTableBody = document.querySelector("#SystemLog tbody");
 
     try {
         const response = await fetch("https://trsms-db.onrender.com/api/logs", {
@@ -116,7 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             row.innerHTML = `
                 <td>${new Date(log.timestamp).toLocaleString()}</td>
-                <td>${log.user || "System"}</td>
+                <td>${log.user?.username || "System"}</td>
                 <td>${log.action}</td>
                 <td>${log.details}</td>
             `;
