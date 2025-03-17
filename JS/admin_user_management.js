@@ -258,3 +258,55 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+//table for users
+document.addEventListener("DOMContentLoaded", async () => {
+    const usersTableBody = document.querySelector(".table-container tbody");
+
+    try {
+        const response = await fetch("https://trsms-db.onrender.com/api/users", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch users: ${response.status}`);
+        }
+
+        const users = await response.json();
+
+        // Clear existing table rows
+        usersTableBody.innerHTML = "";
+
+        if (users.length === 0) {
+            usersTableBody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
+            return;
+        }
+
+        users.forEach(user => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${user.name}</td>
+                <td>${user.phone}</td>
+                <td>${user.role}</td>
+                <td><span class="badge ${user.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${user.status}</span></td>
+                <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-user" data-user="${user.name}">Edit</button>
+                    <button class="btn btn-sm btn-danger disable-user" data-id="${user._id}">${user.status === 'Active' ? 'Disable' : 'Enable'}</button>
+                </td>
+            `;
+
+            usersTableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error loading users:", error);
+        usersTableBody.innerHTML = `<tr><td colspan="6">Error loading users</td></tr>`;
+    }
+});
