@@ -1,204 +1,169 @@
+// Function to fetch invoices from the API
+async function fetchInvoices() {
+  try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          alert("Unauthorized: Please log in again.");
+          return;
+      }
 
-    // Function to fetch invoices from the API
-    async function fetchInvoices() {
-        try {
-            const response = await fetch('https://trsms-db.onrender.com/api/invoices', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+      showLoadingMessage("Fetching invoices...");
+      const response = await fetch('https://trsms-db.onrender.com/api/invoices', {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch invoices');
-            }
+      if (!response.ok) throw new Error('Failed to fetch invoices');
 
-            const invoices = await response.json();
-            renderInvoiceTable(invoices);
-        } catch (error) {
-            console.error('Error fetching invoices:', error);
-        }
-    }
+      const invoices = await response.json();
+      renderInvoiceTable(invoices);
+  } catch (error) {
+      console.error('Error fetching invoices:', error);
+      showErrorMessage("Error fetching invoices. Please try again later.");
+  }
+}
 
-    // Function to render invoice table
-    function renderInvoiceTable(data) {
-        const tbody = document.getElementById('invoiceTableBody');
-        tbody.innerHTML = '';
+// Function to render invoice table
+function renderInvoiceTable(data) {
+  const tbody = document.getElementById('invoiceTableBody');
+  tbody.innerHTML = '';
 
-        data.forEach(invoice => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${invoice.invoiceNumber || `INV-${invoice._id}`}</td>
-                <td>${invoice.client.name}</td>
-                <td>${formatDate(invoice.createdAt)}</td>
-                <td>${formatDate(invoice.dueDate)}</td>
-                <td>$${invoice.total.toFixed(2)}</td>
-                <td><span class="status-badge status-${invoice.status}">${invoice.status}</span></td>
-                <td class="action-buttons">
-                    <button class="btn btn-secondary" onclick="viewInvoice('${invoice._id}')">View</button>
-                    <button class="btn btn-primary" onclick="editInvoice('${invoice._id}')">Edit</button>
-                    <button class="btn btn-danger" onclick="deleteInvoice('${invoice._id}')">Delete</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
+  if (!data.length) {
+      tbody.innerHTML = `<tr><td colspan="7">No invoices found</td></tr>`;
+      return;
+  }
 
-    // View Invoice Functionality
-    let currentInvoiceId = null;
+  data.forEach(invoice => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+          <td>${invoice.invoiceNumber || `INV-${invoice._id}`}</td>
+          <td>${invoice.client?.name || 'Unknown'}</td>
+          <td>${formatDate(invoice.createdAt)}</td>
+          <td>${formatDate(invoice.dueDate)}</td>
+          <td>$${invoice.total?.toFixed(2) || '0.00'}</td>
+          <td><span class="status-badge status-${invoice.status.toLowerCase()}">${invoice.status}</span></td>
+          <td class="action-buttons">
+              <button class="btn btn-secondary" aria-label="View Invoice" onclick="viewInvoice('${invoice._id}')">View</button>
+              <button class="btn btn-primary" aria-label="Edit Invoice" onclick="editInvoice('${invoice._id}')">Edit</button>
+              <button class="btn btn-danger" aria-label="Delete Invoice" onclick="deleteInvoice('${invoice._id}')">Delete</button>
+          </td>
+      `;
+      tbody.appendChild(row);
+  });
+}
 
-    function viewInvoice(invoiceId) {
-        currentInvoiceId = invoiceId;
-        const modal = document.getElementById('view-invoice-modal');
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        loadInvoiceDetails(invoiceId);
-    }
+// View Invoice Functionality
+let currentInvoiceId = null;
 
-    // Fetch invoice details from API
-    async function loadInvoiceDetails(invoiceId) {
-        try {
-            document.getElementById('modal-invoice-items').innerHTML = '<tr><td colspan="4">Loading invoice details...</td></tr>';
-            
-            const response = await fetch(`https://trsms-db.onrender.com/api/invoice/${invoiceId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+function viewInvoice(invoiceId) {
+  currentInvoiceId = invoiceId;
+  const modal = document.getElementById('view-invoice-modal');
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  loadInvoiceDetails(invoiceId);
+}
 
-            if (!response.ok) {
-                throw new Error('Failed to load invoice details');
-            }
+// Fetch invoice details from API
+async function loadInvoiceDetails(invoiceId) {
+  try {
+      showLoadingMessage("Loading invoice details...", 'modal-invoice-items');
 
-            const invoice = await response.json();
-            populateInvoiceDetails(invoice);
-        } catch (error) {
-            console.error('Error loading invoice details:', error);
-            document.getElementById('modal-invoice-items').innerHTML = 
-                `<tr><td colspan="4">Error loading invoice details: ${error.message}</td></tr>`;
-        }
-    }
+      const token = localStorage.getItem('token');
+      if (!token) {
+          alert("Unauthorized: Please log in again.");
+          return;
+      }
 
-    function populateInvoiceDetails(invoice) {
-        document.getElementById('modal-invoice-number').textContent = invoice.invoiceNumber || `INV-${invoice._id}`;
-        document.getElementById('modal-invoice-date').textContent = formatDate(invoice.createdAt);
-        document.getElementById('modal-invoice-due-date').textContent = formatDate(invoice.dueDate);
-        
-        const statusElement = document.getElementById('modal-invoice-status');
-        statusElement.textContent = invoice.status;
-        statusElement.className = `detail-value status-${invoice.status.toLowerCase()}`;
+      const response = await fetch(`https://trsms-db.onrender.com/api/invoice/${invoiceId}`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
 
-        document.getElementById('modal-client-name').textContent = invoice.client.name;
-        document.getElementById('modal-client-address').textContent = invoice.client.address || 'No address provided';
-        document.getElementById('modal-client-phone').textContent = invoice.client.phone || 'No phone provided';
-        document.getElementById('modal-client-email').textContent = invoice.client.email || 'No email provided';
+      if (!response.ok) throw new Error('Failed to load invoice details');
 
-        const itemsContainer = document.getElementById('modal-invoice-items');
-        itemsContainer.innerHTML = '';
+      const invoice = await response.json();
+      populateInvoiceDetails(invoice);
+  } catch (error) {
+      console.error('Error loading invoice details:', error);
+      showErrorMessage("Error loading invoice details.", 'modal-invoice-items');
+  }
+}
 
-        if (invoice.items && invoice.items.length > 0) {
-            invoice.items.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.description}</td>
-                    <td>${item.quantity}</td>
-                    <td>$${item.unitPrice.toFixed(2)}</td>
-                    <td>$${(item.quantity * item.unitPrice).toFixed(2)}</td>
-                `;
-                itemsContainer.appendChild(row);
-            });
-        } else {
-            itemsContainer.innerHTML = '<tr><td colspan="4">No items on this invoice</td></tr>';
-        }
+// Populate invoice details in modal
+function populateInvoiceDetails(invoice) {
+  document.getElementById('modal-invoice-number').textContent = invoice.invoiceNumber || `INV-${invoice._id}`;
+  document.getElementById('modal-invoice-date').textContent = formatDate(invoice.createdAt);
+  document.getElementById('modal-invoice-due-date').textContent = formatDate(invoice.dueDate);
 
-        document.getElementById('modal-invoice-subtotal').textContent = `$${invoice.subtotal.toFixed(2)}`;
-        document.getElementById('modal-invoice-tax').textContent = `$${invoice.tax.toFixed(2)}`;
-        document.getElementById('modal-invoice-total').textContent = `$${invoice.total.toFixed(2)}`;
-        document.getElementById('modal-invoice-notes').textContent = invoice.notes || 'No notes';
-    }
+  const statusElement = document.getElementById('modal-invoice-status');
+  statusElement.textContent = invoice.status;
+  statusElement.className = `detail-value status-${invoice.status.toLowerCase()}`;
 
-    function formatDate(dateString) {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    }
+  document.getElementById('modal-client-name').textContent = invoice.client?.name || 'Unknown';
+  document.getElementById('modal-client-address').textContent = invoice.client?.address || 'No address provided';
+  document.getElementById('modal-client-phone').textContent = invoice.client?.phone || 'No phone provided';
+  document.getElementById('modal-client-email').textContent = invoice.client?.email || 'No email provided';
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('view-invoice-modal');
-        const closeButton = modal.querySelector('.close-modal');
-        const closeModalButton = document.getElementById('close-invoice-modal');
+  const itemsContainer = document.getElementById('modal-invoice-items');
+  itemsContainer.innerHTML = '';
 
-        closeButton.addEventListener('click', function() {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        });
+  if (invoice.items?.length) {
+      invoice.items.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td>${item.description}</td>
+              <td>${item.quantity}</td>
+              <td>$${item.unitPrice?.toFixed(2) || '0.00'}</td>
+              <td>$${(item.quantity * item.unitPrice).toFixed(2) || '0.00'}</td>
+          `;
+          itemsContainer.appendChild(row);
+      });
+  } else {
+      showErrorMessage("No items on this invoice", 'modal-invoice-items');
+  }
 
-        closeModalButton.addEventListener('click', function() {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        });
+  document.getElementById('modal-invoice-subtotal').textContent = `$${invoice.subtotal?.toFixed(2) || '0.00'}`;
+  document.getElementById('modal-invoice-tax').textContent = `$${invoice.tax?.toFixed(2) || '0.00'}`;
+  document.getElementById('modal-invoice-total').textContent = `$${invoice.total?.toFixed(2) || '0.00'}`;
+  document.getElementById('modal-invoice-notes').textContent = invoice.notes || 'No notes';
+}
 
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-        });
+// Utility function for date formatting
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(dateString));
+}
 
-        document.getElementById('print-invoice').addEventListener('click', function() {
-            window.print();
-        });
+// Utility functions for displaying messages
+function showLoadingMessage(message, elementId = 'invoiceTableBody') {
+  document.getElementById(elementId).innerHTML = `<tr><td colspan="7">${message}</td></tr>`;
+}
 
-        document.getElementById('download-invoice').addEventListener('click', async function() {
-            try {
-                const response = await fetch(`https://trsms-db.onrender.com/api/invoice/${currentInvoiceId}/pdf`, {
-                    method: 'GET',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
+function showErrorMessage(message, elementId = 'invoiceTableBody') {
+  document.getElementById(elementId).innerHTML = `<tr><td colspan="7" style="color: red;">${message}</td></tr>`;
+}
 
-                if (!response.ok) {
-                    throw new Error('Failed to generate PDF');
-                }
+// Modal Handling
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('view-invoice-modal');
+  const closeButton = modal.querySelector('.close-modal');
+  const closeModalButton = document.getElementById('close-invoice-modal');
 
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `invoice-${currentInvoiceId}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error('Error downloading PDF:', error);
-                alert('Failed to download invoice as PDF');
-            }
-        });
+  closeButton.addEventListener('click', closeModal);
+  closeModalButton.addEventListener('click', closeModal);
 
-        document.getElementById('email-invoice').addEventListener('click', async function() {
-            try {
-                const response = await fetch(`https://trsms-db.onrender.com/api/invoice/${currentInvoiceId}/email`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+  window.addEventListener('click', function(event) {
+      if (event.target === modal) closeModal();
+  });
 
-                if (!response.ok) {
-                    throw new Error('Failed to send email');
-                }
+  function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+  }
 
-                alert('Invoice has been emailed successfully');
-            } catch (error) {
-                console.error('Error emailing invoice:', error);
-                alert('Failed to send invoice by email');
-            }
-        });
-
-        // Fetch and display invoices when the page loads
-        fetchInvoices();
-    });
+  // Fetch and display invoices on page load
+  fetchInvoices();
+});
 
  
 

@@ -616,42 +616,11 @@
     <script src="../JS/nav.js"></script>
     <script src="../JS/adminInvoice.js"></script>
     <script>
-       
-        // Filter functionality
-        function filterInvoices() {
-            const status = document.getElementById('statusFilter').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const minAmount = document.getElementById('minAmount').value;
-            const maxAmount = document.getElementById('maxAmount').value;
-
-            let filteredInvoices = invoices.filter(invoice => {
-                let matches = true;
-
-                if (status && invoice.status !== status) matches = false;
-                if (startDate && invoice.date < startDate) matches = false;
-                if (endDate && invoice.date > endDate) matches = false;
-                if (minAmount && invoice.amount < minAmount) matches = false;
-                if (maxAmount && invoice.amount > maxAmount) matches = false;
-
-                return matches;
-            });
-
-            renderInvoiceTable(filteredInvoices);
-        }
-
-        // Add event listeners to filter inputs
-        document.getElementById('statusFilter').addEventListener('change', filterInvoices);
-        document.getElementById('startDate').addEventListener('change', filterInvoices);
-        document.getElementById('endDate').addEventListener('change', filterInvoices);
-        document.getElementById('minAmount').addEventListener('change', filterInvoices);
-        document.getElementById('maxAmount').addEventListener('change', filterInvoices);
 
 
-      
+        
 
-        // Initial render
-        renderInvoiceTable();
+  
 
 
   
