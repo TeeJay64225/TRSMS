@@ -205,3 +205,64 @@ window.openAddClientModal = openModal;
         }
     });
 });
+
+
+
+//client details table
+document.addEventListener('DOMContentLoaded', async function () {
+    const clientTableBody = document.querySelector('tbody');
+
+    async function fetchClients() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Authentication required! Please log in.');
+
+            const response = await fetch('https://trsms-db.onrender.com/api/clients/', {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to fetch clients');
+
+            populateClientTable(data);
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+            clientTableBody.innerHTML = `<tr><td colspan="7" class="error-message">${error.message}</td></tr>`;
+        }
+    }
+
+    function populateClientTable(clients) {
+        clientTableBody.innerHTML = ''; // Clear table before adding new data
+
+        if (clients.length === 0) {
+            clientTableBody.innerHTML = `<tr><td colspan="7" class="text-center">No clients found.</td></tr>`;
+            return;
+        }
+
+        clients.forEach(client => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="checkbox" class="row-select"></td>
+                <td>${client.name}</td>
+                <td>${client.email}</td>
+                <td>${client.phone}</td>
+                <td>$${client.totalSpend || '0.00'}</td>
+                <td>
+                    <span class="status-badge ${client.status === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-primary edit-client" data-client-id="${client._id}">Edit</button>
+                    <button class="btn btn-danger suspend-client" data-client-id="${client._id}">Suspend</button>
+                </td>
+            `;
+            clientTableBody.appendChild(row);
+        });
+    }
+
+    // Fetch and display clients when the page loads
+    fetchClients();
+});
+
