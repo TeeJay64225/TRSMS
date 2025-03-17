@@ -33,48 +33,52 @@ async function fetchTotalUsers() {
 
 document.addEventListener('DOMContentLoaded', fetchTotalUsers);
 
-
-
-
+//Users Table
 document.addEventListener("DOMContentLoaded", async () => {
-    const tableBody = document.querySelector("tbody");
+    const tableBody = document.querySelector(".user-management-table tbody");
 
     try {
-        const response = await fetch("https://trsms-db.onrender.com/api/users");
+        const response = await fetch("https://trsms-db.onrender.com/api/users", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`, // Ensure token is stored
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch users: ${response.status}`);
+        }
+
         const users = await response.json();
 
-        if (!Array.isArray(users)) {
-            console.error("Unexpected response format:", users);
+        // Clear existing table rows
+        tableBody.innerHTML = "";
+
+        if (users.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5">No users found</td></tr>`;
             return;
         }
 
-        tableBody.innerHTML = ""; // Clear existing table data
-
         users.forEach(user => {
-            const lastActive = user.lastActive || "N/A"; // Handle missing last active time
-            const status = user.status === "active" ? 
-                '<span class="badge badge-success">Active</span>' : 
-                '<span class="badge badge-danger">Inactive</span>';
+            const row = document.createElement("tr");
 
-            const row = `
-                <tr>
-                    <td>${user.name}</td>
-                    <td>${user.phone}</td>
-                    <td>${user.role}</td>
-                    <td>${lastActive}</td>
-                    <td>${status}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-user">Active</button>
-                        <button class="btn btn-sm btn-danger">Disable</button>
-                    </td>
-                </tr>
+            row.innerHTML = `
+                <td>${user.name || "N/A"}</td>
+                <td>${user.role || "N/A"}</td>
+                <td>${user.lastActive || "N/A"}</td>
+                <td><span class="badge ${user.status === "Active" ? "badge-success" : "badge-warning"}">${user.status}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-user">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-user" data-id="${user._id}">Disable</button>
+                </td>
             `;
 
-            tableBody.innerHTML += row;
+            tableBody.appendChild(row);
         });
 
     } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error loading users:", error);
+        tableBody.innerHTML = `<tr><td colspan="5">Error loading users</td></tr>`;
     }
 });
-
