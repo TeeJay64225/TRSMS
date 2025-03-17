@@ -209,3 +209,39 @@ document.addEventListener('DOMContentLoaded', function () {
   // Expose the function globally
   window.viewInvoice = viewInvoice;
 });
+
+
+//total invoice
+// Function to fetch and display total invoices
+async function fetchTotalInvoices() {
+  try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Unauthorized: Missing token');
+          return;
+      }
+
+      console.log("Fetching total invoice count...");
+
+      const response = await fetch('https://trsms-db.onrender.com/api/invoices', {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+          throw new Error(`Failed to fetch invoices (Status: ${response.status})`);
+      }
+
+      const invoices = await response.json();
+
+      // Update the UI with the count
+      document.getElementById('totalInvoices').textContent = invoices.length || 0;
+      
+  } catch (error) {
+      console.error('Error fetching total invoices:', error);
+      document.getElementById('totalInvoices').textContent = 'Error';
+  }
+}
+
+// Call function when page loads
+document.addEventListener('DOMContentLoaded', fetchTotalInvoices);
