@@ -274,6 +274,141 @@
             display: block;
         }
 
+        /* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 550px;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-in-out;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #888888;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #333333;
+}
+
+/* Form Styles */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555555;
+}
+
+.form-input {
+    padding: 10px 12px;
+    border: 1px solid #dddddd;
+    border-radius: 20px;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 10px 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+}
+
+.btn-primary:hover {
+    background-color: #3a80d2;
+    border-color: #3a80d2;
+}
+
+.btn-primary:active {
+    background-color: #2a70c2;
+    border-color: #2a70c2;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 600px) {
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .form-input {
+        padding: 12px;
+    }
+    
+    .btn {
+        padding: 12px;
+        width: 100%;
+    }
+}
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .client-grid {
@@ -284,7 +419,7 @@
 </head>
 
 <body>
-   <!-- Staff Navigation Bar -->
+  <!-- Staff Navigation Bar -->
 <nav class="navbar">
     <div class="nav-container">
         <div class="logo"><b>TruckFix Pro</b><span class="staff-badge">Staff</span></div>
@@ -298,25 +433,45 @@
                 </svg>
                 Dashboard
             </a>
-            <a href="invoice.html" class="nav-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                Invoices
-            </a>
-            <a href="invoice_creation.html" class="nav-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="12" y1="18" x2="12" y2="12"></line>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                Invoice Creation
-            </a>
+            <div class="dropdown">
+                <a href="javascript:void(0)" class="nav-link dropdown-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Invoices
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="dropdown-arrow">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </a>
+                <div class="dropdown-content">
+                    <a href="invoice.html">All Invoices</a>
+                    <a href="invoice_creation.html">Create Invoice</a>
+                    <a href="invoices.html">Invoices Records</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="javascript:void(0)" class="nav-link dropdown-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+                        <path d="M4 2v20l4-4 4 4 4-4 4 4V2"></path>
+                        <path d="M16 8h-6"></path>
+                        <path d="M16 12h-8"></path>
+                        <path d="M16 16h-4"></path>
+                    </svg>
+                    Receipts
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="dropdown-arrow">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </a>
+                <div class="dropdown-content">
+                    <a href="receipt.html">All Receipts</a>
+                    <a href="receipt_creation.html">Create Receipt</a>
+                    <a href="receipt.html">Receipt Records</a>
+                </div>
+            </div>
             <a href="client.html" class="nav-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -343,7 +498,6 @@
         </div>
     </div>
 </nav>
- 
 
     <!-- Staff Sidebar -->
     <aside class="sidebar">
@@ -392,31 +546,49 @@
     </aside>
     <br>
     <br>
-    !-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav">
-        <div class="mobile-nav-container">
-            <a href="staff_dashboard.html" class="mobile-nav-item active">
-                <i class="fas fa-home"></i>
-                Home
-            </a>
-            <a href="invoice.html" class="mobile-nav-item">
+    <!-- Mobile Bottom Navigation -->
+<nav class="mobile-nav">
+    <div class="mobile-nav-container">
+        <a href="staff_dashboard.html" class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+        <div class="mobile-nav-item dropdown">
+            <a href="javascript:void(0)" class="mobile-dropdown-toggle">
                 <i class="fas fa-file-invoice"></i>
                 Invoices
             </a>
-            <a href="client.html" class="mobile-nav-item">
-                <i class="fas fa-users"></i>
-                Clients
-            </a>
-            <a href="myTask.html" class="mobile-nav-item">
-                <i class="fas fa-tasks"></i>
-                Tasks
-            </a>
-            <a href="staff_Profile.html" class="mobile-nav-item">
-                <i class="fas fa-user"></i>
-                Profile
-            </a>
+            <div class="mobile-dropdown-content">
+                <a href="invoice.html">All Invoices</a>
+                <a href="invoice_creation.html">Create Invoice</a>
+                <a href="invoices.html">Invoices Records</a>
+            </div>
         </div>
-    </nav>
+        <div class="mobile-nav-item dropdown">
+            <a href="javascript:void(0)" class="mobile-dropdown-toggle">
+                <i class="fa-solid fa-receipt"></i>
+                Receipts
+            </a>
+            <div class="mobile-dropdown-content">
+                <a href="receipt.html">All Receipts</a>
+                <a href="receipt_creation.html">Create Receipt</a>
+                <a href="receipt.html">Receipt Records</a>
+            </div>
+        </div>
+        <a href="client.html" class="mobile-nav-item">
+            <i class="fas fa-users"></i>
+            Clients
+        </a>
+        <a href="myTask.html" class="mobile-nav-item">
+            <i class="fas fa-tasks"></i>
+            Tasks
+        </a>
+        <a href="staff_Profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            Profile
+        </a>
+    </div>
+</nav>
     
     <!-- Main Content -->
     <main class="main-content">
