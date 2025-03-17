@@ -62,3 +62,142 @@ function formatDate(dateString) {
 
 // Fetch and display invoices when the page loads
 document.addEventListener('DOMContentLoaded', fetchInvoices);
+
+
+
+
+
+
+//view modal
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = document.getElementById('viewInvoiceModal');
+  const closeModalBtn = document.getElementById('closeViewInvoiceModal');
+  const closeInvoiceBtn = document.getElementById('closeInvoiceBtn');
+  const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+  const emailInvoiceBtn = document.getElementById('emailInvoiceBtn');
+
+  let currentInvoiceId = null;
+
+  // Function to open and load invoice details
+  async function viewInvoice(invoiceId) {
+      currentInvoiceId = invoiceId;
+
+      // Show the modal
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+      try {
+          // Fetch invoice data from the API
+          const token = localStorage.getItem('token');
+          if (!token) {
+              alert('Unauthorized: Please log in again.');
+              return;
+          }
+
+          const response = await fetch(`https://trsms-db.onrender.com/api/invoices/${invoiceId}`, {
+              method: 'GET',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!response.ok) {
+              throw new Error('Failed to fetch invoice details');
+          }
+
+          const invoice = await response.json();
+
+          // Populate modal fields
+          document.getElementById('viewInvoiceId').textContent = invoice.invoiceNumber || `INV-${invoice._id}`;
+          document.getElementById('viewInvoiceClient').textContent = invoice.client?.name || 'Unknown';
+          document.getElementById('viewInvoiceDate').textContent = formatDate(invoice.date);
+          document.getElementById('viewInvoiceDueDate').textContent = formatDate(invoice.dueDate);
+          document.getElementById('viewInvoiceAmount').textContent = `$${invoice.total?.toFixed(2) || '0.00'}`;
+
+          const statusElement = document.getElementById('viewInvoiceStatus');
+          statusElement.textContent = invoice.status;
+          statusElement.className = `detail-value status-${invoice.status.toLowerCase()}`;
+
+          // Populate invoice items
+          const itemsContainer = document.getElementById('viewInvoiceItems');
+          itemsContainer.innerHTML = '';
+
+          if (invoice.items?.length) {
+              invoice.items.forEach(item => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                      <td>${item.description}</td>
+                      <td>${item.quantity}</td>
+                      <td>$${item.price.toFixed(2)}</td>
+                      <td>$${(item.quantity * item.price).toFixed(2)}</td>
+                  `;
+                  itemsContainer.appendChild(row);
+              });
+          } else {
+              itemsContainer.innerHTML = '<tr><td colspan="4">No items on this invoice</td></tr>';
+          }
+
+          // Populate totals
+          document.getElementById('viewInvoiceSubtotal').textContent = `$${invoice.subtotal?.toFixed(2) || '0.00'}`;
+          document.getElementById('viewInvoiceTax').textContent = `$${invoice.tax?.toFixed(2) || '0.00'}`;
+          document.getElementById('viewInvoiceTotal').textContent = `$${invoice.total?.toFixed(2) || '0.00'}`;
+          document.getElementById('viewInvoiceNotes').textContent = invoice.notes || 'No notes';
+
+      } catch (error) {
+          console.error('Error loading invoice details:', error);
+          document.getElementById('viewInvoiceItems').innerHTML = `<tr><td colspan="4">Error loading invoice details</td></tr>`;
+      }
+  }
+
+  // Format date function
+  function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      return new Date(dateString).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+      });
+  }
+
+  // Close modal function
+  function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = ''; // Re-enable scrolling
+  }
+
+  // Close modal event listeners
+  closeModalBtn.addEventListener('click', closeModal);
+  closeInvoiceBtn.addEventListener('click', closeModal);
+  window.addEventListener('click', event => {
+      if (event.target === modal) closeModal();
+  });
+
+  // Print invoice
+  printInvoiceBtn.addEventListener('click', function () {
+      window.print();
+  });
+
+  // Email invoice
+  emailInvoiceBtn.addEventListener('click', async function () {
+      try {
+          const token = localStorage.getItem('token');
+          const response = await fetch(`https://trsms-db.onrender.com/api/invoices/${currentInvoiceId}/email`, {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+              }
+          });
+
+          if (!response.ok) {
+              throw new Error('Failed to send invoice via email');
+          }
+
+          alert('Invoice emailed successfully!');
+      } catch (error) {
+          console.error('Error emailing invoice:', error);
+          alert('Failed to send invoice');
+      }
+  });
+
+  // Expose the function globally
+  window.viewInvoice = viewInvoice;
+});
