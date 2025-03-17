@@ -616,58 +616,7 @@
     <script src="../JS/nav.js"></script>
     <script src="../JS/adminInvoice.js"></script>
     <script>
-        // Sample invoice data
-        const invoices = [
-            {
-                id: 'INV-2024-001',
-                client: 'Smith Trucking Co.',
-                date: '2024-01-15',
-                dueDate: '2024-01-30',
-                amount: 2500.00,
-                status: 'paid'
-            },
-            {
-                id: 'INV-2024-002',
-                client: 'Johnson Logistics',
-                date: '2024-01-20',
-                dueDate: '2024-02-04',
-                amount: 1800.00,
-                status: 'pending'
-            },
-            {
-                id: 'INV-2024-003',
-                client: 'ABC Transport',
-                date: '2024-01-10',
-                dueDate: '2024-01-25',
-                amount: 3200.00,
-                status: 'overdue'
-            }
-        ];
-
-        // Function to render invoice table
-        function renderInvoiceTable(data = invoices) {
-            const tbody = document.getElementById('invoiceTableBody');
-            tbody.innerHTML = '';
-
-            data.forEach(invoice => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${invoice.id}</td>
-                    <td>${invoice.client}</td>
-                    <td>${invoice.date}</td>
-                    <td>${invoice.dueDate}</td>
-                    <td>$${invoice.amount.toFixed(2)}</td>
-                    <td><span class="status-badge status-${invoice.status}">${invoice.status}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn btn-secondary" onclick="viewInvoice('${invoice.id}')">View</button>
-                        <button class="btn btn-primary" onclick="editInvoice('${invoice.id}')">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteInvoice('${invoice.id}')">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
+       
         // Filter functionality
         function filterInvoices() {
             const status = document.getElementById('statusFilter').value;
