@@ -241,16 +241,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         clients.forEach(client => {
+            const status = client.status ? client.status : "inactive"; // 🔥 Fix undefined status
+            const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1); // Capitalize first letter
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><input type="checkbox" class="row-select"></td>
-                <td>${client.name}</td>
-                <td>${client.email}</td>
-                <td>${client.phone}</td>
+                <td>${client.name || 'N/A'}</td>  <!-- Handle missing names -->
+                <td>${client.email || 'N/A'}</td> <!-- Handle missing emails -->
+                <td>${client.phone || 'N/A'}</td> <!-- Handle missing phones -->
                 <td>$${client.totalSpend || '0.00'}</td>
                 <td>
-                    <span class="status-badge ${client.status === 'active' ? 'status-active' : 'status-inactive'}">
-                        ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                    <span class="status-badge ${status === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${formattedStatus}
                     </span>
                 </td>
                 <td>
@@ -262,7 +265,5 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // Fetch and display clients when the page loads
-    fetchClients();
+    fetchClients(); // Fetch and display clients when the page loads
 });
-
