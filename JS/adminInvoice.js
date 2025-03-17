@@ -91,8 +91,11 @@ document.addEventListener('DOMContentLoaded', function () {
           const token = localStorage.getItem('token');
           if (!token) {
               alert('Unauthorized: Please log in again.');
+              closeModal();
               return;
           }
+
+          console.log(`Fetching invoice details for ID: ${invoiceId}`);
 
           const response = await fetch(`https://trsms-db.onrender.com/api/invoices/${invoiceId}`, {
               method: 'GET',
@@ -100,10 +103,15 @@ document.addEventListener('DOMContentLoaded', function () {
           });
 
           if (!response.ok) {
-              throw new Error('Failed to fetch invoice details');
+              throw new Error(`Failed to fetch invoice details (Status: ${response.status})`);
           }
 
           const invoice = await response.json();
+          console.log("Invoice Data:", invoice);
+
+          if (!invoice || !invoice._id) {
+              throw new Error('Invalid invoice data received');
+          }
 
           // Populate modal fields
           document.getElementById('viewInvoiceId').textContent = invoice.invoiceNumber || `INV-${invoice._id}`;
@@ -113,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('viewInvoiceAmount').textContent = `$${invoice.total?.toFixed(2) || '0.00'}`;
 
           const statusElement = document.getElementById('viewInvoiceStatus');
-          statusElement.textContent = invoice.status;
-          statusElement.className = `detail-value status-${invoice.status.toLowerCase()}`;
+          statusElement.textContent = invoice.status || 'Pending';
+          statusElement.className = `detail-value status-${(invoice.status || 'pending').toLowerCase()}`;
 
           // Populate invoice items
           const itemsContainer = document.getElementById('viewInvoiceItems');
@@ -124,10 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
               invoice.items.forEach(item => {
                   const row = document.createElement('tr');
                   row.innerHTML = `
-                      <td>${item.description}</td>
-                      <td>${item.quantity}</td>
-                      <td>$${item.price.toFixed(2)}</td>
-                      <td>$${(item.quantity * item.price).toFixed(2)}</td>
+                      <td>${item.description || 'N/A'}</td>
+                      <td>${item.quantity || 0}</td>
+                      <td>$${(item.price || 0).toFixed(2)}</td>
+                      <td>$${((item.quantity || 0) * (item.price || 0)).toFixed(2)}</td>
                   `;
                   itemsContainer.appendChild(row);
               });
@@ -143,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       } catch (error) {
           console.error('Error loading invoice details:', error);
-          document.getElementById('viewInvoiceItems').innerHTML = `<tr><td colspan="4">Error loading invoice details</td></tr>`;
+          document.getElementById('viewInvoiceItems').innerHTML = `<tr><td colspan="4" style="color: red;">Error loading invoice details: ${error.message}</td></tr>`;
       }
   }
 
