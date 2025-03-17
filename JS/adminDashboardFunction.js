@@ -82,3 +82,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         tableBody.innerHTML = `<tr><td colspan="5">Error loading users</td></tr>`;
     }
 });
+
+
+//system Logs
+document.addEventListener("DOMContentLoaded", async () => {
+    const logsTableBody = document.querySelector(".table-container tbody");
+
+    try {
+        const response = await fetch("https://trsms-db.onrender.com/api/logs", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch logs: ${response.status}`);
+        }
+
+        const logs = await response.json();
+
+        // Clear existing table rows
+        logsTableBody.innerHTML = "";
+
+        if (logs.length === 0) {
+            logsTableBody.innerHTML = `<tr><td colspan="4">No logs found</td></tr>`;
+            return;
+        }
+
+        logs.forEach(log => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td>${log.user || "System"}</td>
+                <td>${log.action}</td>
+                <td>${log.details}</td>
+            `;
+
+            logsTableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error loading logs:", error);
+        logsTableBody.innerHTML = `<tr><td colspan="4">Error loading logs</td></tr>`;
+    }
+});
