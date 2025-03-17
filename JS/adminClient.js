@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorMessage = document.getElementById('clientFormError');
     
     // Form Inputs
-    const companyNameInput = document.getElementById('clientCompanyName');
+    const companyNameInput = document.getElementById('name');
     const emailInput = document.getElementById('clientEmail');
     const phoneInput = document.getElementById('clientPhone');
     const statusSelect = document.getElementById('clientStatus');
@@ -45,15 +45,14 @@ document.addEventListener('DOMContentLoaded', function () {
     addClientForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         errorMessage.textContent = '';
-        
-        // Get Form Values
         const clientData = {
-            name: companyNameInput.value.trim(), // ✅ Change "companyName" to "name"
+            name: companyNameInput.value.trim(),  // 🔥 Change companyName → name
             email: emailInput.value.trim(),
             phone: phoneInput.value.trim(),
             status: statusSelect.value,
             sendWelcomeEmail: sendWelcomeEmailCheckbox.checked
         };
+        
         
 
         // Form Validation
