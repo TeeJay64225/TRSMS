@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // API endpoint for adding new user
-            const response = await fetch('https://trsms-db.onrender.com/api/user/register', {
+            const response = await fetch('https://trsms-db.onrender.com/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
