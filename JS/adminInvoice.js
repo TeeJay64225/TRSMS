@@ -245,3 +245,158 @@ async function fetchTotalInvoices() {
 
 // Call function when page loads
 document.addEventListener('DOMContentLoaded', fetchTotalInvoices);
+
+
+
+
+
+//edit invoice
+document.addEventListener('DOMContentLoaded', function () {
+  // Get modal elements
+  const editInvoiceModal = document.getElementById('editInvoiceModal');
+  const closeEditInvoiceModal = document.getElementById('closeEditInvoiceModal');
+  const cancelEditInvoice = document.getElementById('cancelEditInvoice');
+  const editInvoiceForm = document.getElementById('editInvoiceForm');
+  const editInvoiceError = document.getElementById('editInvoiceError');
+  
+  // Form fields
+  const editInvoiceId = document.getElementById('editInvoiceId');
+  const editClient = document.getElementById('editClient');
+  const editDate = document.getElementById('editDate');
+  const editDueDate = document.getElementById('editDueDate');
+  const editAmount = document.getElementById('editAmount');
+  const editStatus = document.getElementById('editStatus');
+
+  // Function to open the edit invoice modal
+  window.editInvoice = async function (invoiceId) {
+      try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+              alert("Unauthorized: Please log in again.");
+              return;
+          }
+
+          const response = await fetch(`https://trsms-db.onrender.com/api/invoices/${invoiceId}`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+              }
+          });
+
+          if (!response.ok) {
+              throw new Error('Failed to fetch invoice details');
+          }
+
+          const invoice = await response.json();
+
+          // Populate form fields
+          editInvoiceId.value = invoice._id;
+          editClient.value = invoice.client?.name || '';
+          editDate.value = formatDateForInput(invoice.date);
+          editDueDate.value = formatDateForInput(invoice.dueDate);
+          editAmount.value = invoice.total;
+          editStatus.value = invoice.status;
+
+          // Show the modal
+          editInvoiceModal.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+
+      } catch (error) {
+          console.error('Error fetching invoice details:', error);
+          alert('Failed to load invoice details.');
+      }
+  };
+
+  // Function to format date for input fields
+  function formatDateForInput(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+  }
+
+  // Function to close the edit invoice modal
+  function closeEditModal() {
+      editInvoiceModal.style.display = 'none';
+      document.body.style.overflow = ''; // Enable scrolling
+      editInvoiceForm.reset(); // Reset form
+  }
+
+  // Close modal when clicking the X button or Cancel button
+  closeEditInvoiceModal.addEventListener('click', closeEditModal);
+  cancelEditInvoice.addEventListener('click', closeEditModal);
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function (event) {
+      if (event.target === editInvoiceModal) {
+          closeEditModal();
+      }
+  });
+
+  // Handle form submission (Updating the Invoice)
+  editInvoiceForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      editInvoiceError.textContent = '';
+
+      // Get form values
+      const invoiceId = editInvoiceId.value;
+      const client = editClient.value.trim();
+      const date = editDate.value;
+      const dueDate = editDueDate.value;
+      const amount = parseFloat(editAmount.value);
+      const status = editStatus.value;
+
+      // Validate form
+      if (!client || !date || !dueDate || isNaN(amount)) {
+          editInvoiceError.textContent = 'All fields are required';
+          return;
+      }
+
+      // Disable save button and show loading state
+      const saveButton = document.getElementById('saveInvoiceChanges');
+      saveButton.disabled = true;
+      saveButton.textContent = 'Saving...';
+
+      try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+              alert("Unauthorized: Please log in again.");
+              return;
+          }
+
+          const response = await fetch(`https://trsms-db.onrender.com/api/invoices/${invoiceId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                  client,
+                  date,
+                  dueDate,
+                  total: amount,
+                  status
+              })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+              throw new Error(data.error || 'Failed to update invoice');
+          }
+
+          // Success - close modal and refresh invoice list
+          alert('Invoice updated successfully!');
+          closeEditModal();
+          fetchInvoices(); // Refresh invoice list
+
+      } catch (error) {
+          editInvoiceError.textContent = error.message || 'An error occurred while updating the invoice';
+          console.error('Edit invoice error:', error);
+      } finally {
+          // Re-enable save button
+          saveButton.disabled = false;
+          saveButton.textContent = 'Save Changes';
+      }
+  });
+});
