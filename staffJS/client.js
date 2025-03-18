@@ -220,6 +220,8 @@ function renderClients(clientData) {
         clientGrid.appendChild(clientCard);
     });
 
+
+    
     // Attach event listeners for view and edit buttons
     document.querySelectorAll(".view-client").forEach(button => {
         button.addEventListener("click", function () {
@@ -267,11 +269,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add event listener for client view buttons
   document.getElementById("clientGrid").addEventListener("click", function (event) {
-      if (event.target.classList.contains("view-client")) {
-          const clientId = event.target.getAttribute("data-id");
-          openClientDetailModal(clientId);
-      }
-  });
+    if (event.target.classList.contains("view-client")) {
+        const clientId = event.target.getAttribute("data-id");
+        console.log("Client ID Clicked:", clientId); // ✅ Debugging log
+        if (!clientId) {
+            console.error("Error: Client ID not found in the button!");
+            return;
+        }
+        openClientDetailModal(clientId);
+    }
+});
+
 
   // Add event listener for modal close
   document.getElementById("clientDetailModal").addEventListener("click", function (event) {
@@ -313,10 +321,13 @@ async function fetchClients() {
   }
 }
 
+
+
+
 // Function to render clients
 function renderClients(clientData) {
   const clientGrid = document.getElementById("clientGrid");
-  clientGrid.innerHTML = ""; // Clear existing content
+  clientGrid.innerHTML = ""; // Clear previous content
 
   if (!clientData.length) {
       clientGrid.innerHTML = `<div class="no-clients">No clients found</div>`;
@@ -327,7 +338,6 @@ function renderClients(clientData) {
       const clientCard = document.createElement("div");
       clientCard.classList.add("client-card");
 
-      // Extract initials from client name
       const initials = client.name ? client.name[0].toUpperCase() : "C";
 
       clientCard.innerHTML = `
@@ -342,7 +352,7 @@ function renderClients(clientData) {
               <h3>${client.name || "Unknown Client"}</h3>
               <div class="client-detail"><i class="fas fa-envelope"></i> ${client.email || "No Email"}</div>
               <div class="client-detail"><i class="fas fa-phone"></i> ${client.phone || "No Phone"}</div>
-              <div class="client-detail"><i class="fas fa-truck"></i> Active Vehicles: ${client.vehicles || "N/A"}</div>
+              <div class="client-detail"><i class="fas fa-truck"></i> Active Vehicles: ${client.vehicles ? client.vehicles.length : "N/A"}</div>
               <div class="client-detail"><span class="badge badge-success">Good Standing</span></div>
           </div>
       `;
@@ -361,6 +371,11 @@ function renderClients(clientData) {
 // Function to open client detail modal
 // Function to open client detail modal
 async function openClientDetailModal(clientId) {
+  if (!clientId) {
+      console.error("Error: clientId is undefined or null!");
+      return;
+  }
+
   try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -368,27 +383,29 @@ async function openClientDetailModal(clientId) {
           return;
       }
 
+      console.log("Fetching client details for ID:", clientId);
+
       const response = await fetch(`https://trsms-db.onrender.com/api/clients/${clientId}`, {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
-    });
-    
-    const data = await response.json();
-    console.log("API Response:", data);
-    
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch client details");
-    }
-    
+          method: "GET",
+          headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch client details");
+      }
 
       populateClientDetails(data);
 
       document.getElementById("clientDetailModal").style.display = "block";
   } catch (error) {
       console.error("Error fetching client details:", error);
-      alert(error.message || "Error fetching client details. Please try again later.");
+      alert("Error fetching client details. Please try again later.");
   }
 }
+
 
 
 
