@@ -1,23 +1,5 @@
 // User management functions
-document.addEventListener('DOMContentLoaded', function () {
-    // Check if user is logged in and has admin privileges
-    const userString = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
 
-    if (!userString || !token) {
-        window.location.href = '../admin/admin_access_control.html';
-        return;
-    }
-
-    const user = JSON.parse(userString);
-    if (user.role !== 'admin') {
-        window.location.href = '../admin/admin_access_control.html';
-        return;
-    }
-
-    // Fetch users from database
-    fetchUsers();
-});
 
 // Function to fetch users from the API
 async function fetchUsers() {
