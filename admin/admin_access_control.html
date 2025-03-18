@@ -278,43 +278,23 @@
                 <button class="btn btn-primary">Add Role</button>
             </div>
 
-            <!-- Users Table -->
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>john_doe</td>
-                        <td>john@example.com</td>
-                        <td>Admin</td>
-                        <td><span style="color: var(--success-color);">Active</span></td>
-                        <td>
-                            <button class="btn btn-success">Enable</button>
-                            <button class="btn btn-danger">Disable</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>jane_smith</td>
-                        <td>jane@example.com</td>
-                        <td>Manager</td>
-                        <td><span style="color: var(--danger-color);">Disabled</span></td>
-                        <td>
-                            <button class="btn btn-success">Enable</button>
-                            <button class="btn btn-danger">Disable</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+           <!-- Users Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="usersTableBody">
+        <!-- Table data will be dynamically inserted here -->
+    </tbody>
+</table>
+
 
             <!-- Activity Logs -->
             <h2>Activity Logs</h2>
@@ -342,6 +322,7 @@
         </main>
     </div>
     <script src="../JS/nav.js"></script>
+    <script src="../JS/adminAccessControl.js"></script>
 </body>
 
 </html>
