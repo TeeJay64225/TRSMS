@@ -8,6 +8,7 @@ async function fetchUsers() {
         const token = localStorage.getItem("token");
         if (!token) {
             alert("Unauthorized: Please log in again.");
+            window.location.href = "index.html"; // Redirect to login page
             return;
         }
 
@@ -17,14 +18,28 @@ async function fetchUsers() {
         // Fetch users from API
         const response = await fetch("https://trsms-db.onrender.com/api/users", {
             method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
         });
 
         if (!response.ok) {
-            throw new Error("Failed to fetch users");
+            if (response.status === 401) {
+                alert("Session expired. Please log in again.");
+                localStorage.clear();
+                window.location.href = "login.html";
+                return;
+            }
+            throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
 
         const users = await response.json();
+
+        if (!Array.isArray(users)) {
+            throw new Error("Unexpected API response: Users data is not an array");
+        }
+
         renderUsers(users);
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -33,30 +48,33 @@ async function fetchUsers() {
 }
 
 // Function to render users in the table
-function renderUsers(userData) {
+function renderUsers(users) {
     const tbody = document.getElementById("usersTableBody");
     tbody.innerHTML = "";
 
-    if (!userData.length) {
+    if (!users.length) {
         tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
         return;
     }
 
-    userData.forEach(user => {
+    users.forEach(user => {
+        const status = user.status || (user.active ? "active" : "inactive"); // Support both `status` & `active`
+        const isActive = status.toLowerCase() === "active";
+
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${user._id}</td>
-            <td>${user.name}</td>
-            <td>${user.phone}</td>
-            <td>${user.role}</td>
+            <td>${user._id || "N/A"}</td>
+            <td>${user.name || "N/A"}</td>
+            <td>${user.phone || "N/A"}</td>
+            <td>${user.role || "N/A"}</td>
             <td>
-                <span style="color: ${user.status === 'active' ? 'green' : 'red'};">
-                    ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                <span style="color: ${isActive ? "green" : "red"};">
+                    ${status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
             </td>
             <td>
-                <button class="btn btn-success" onclick="updateUserStatus('${user._id}', 'active')">Enable</button>
-                <button class="btn btn-danger" onclick="updateUserStatus('${user._id}', 'disabled')">Disable</button>
+                <button class="btn btn-success ${isActive ? "hidden" : ""}" onclick="updateUserStatus('${user._id}', 'active')">Enable</button>
+                <button class="btn btn-danger ${isActive ? "" : "hidden"}" onclick="updateUserStatus('${user._id}', 'inactive')">Disable</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -73,10 +91,10 @@ async function updateUserStatus(userId, status) {
         }
 
         const response = await fetch(`https://trsms-db.onrender.com/api/users/${userId}`, {
-            method: "PUT",
+            method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ status })
         });
