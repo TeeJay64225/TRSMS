@@ -128,3 +128,130 @@ document.addEventListener("keydown", (e) => {
     closeClientModal();
   }
 });
+
+
+
+//Clients Details Display in cards
+document.addEventListener("DOMContentLoaded", function () {
+    fetchClients(); // Fetch clients when the page loads
+});
+
+// Function to fetch clients from the API
+async function fetchClients() {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Unauthorized: Please log in again.");
+            return;
+        }
+
+        // Show loading message
+        showLoadingMessage("Loading clients...", "clientGrid");
+
+        // Fetch clients from API
+        const response = await fetch("https://trsms-db.onrender.com/api/clients", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch clients");
+        }
+
+        const clients = await response.json();
+        renderClients(clients);
+    } catch (error) {
+        console.error("Error fetching clients:", error);
+        showErrorMessage("Error fetching clients. Please try again later.", "clientGrid");
+    }
+}
+
+// Function to render clients in the grid
+function renderClients(clientData) {
+    const clientGrid = document.getElementById("clientGrid");
+    clientGrid.innerHTML = ""; // Clear existing content
+
+    if (!clientData.length) {
+        clientGrid.innerHTML = `<div class="no-clients">No clients found</div>`;
+        return;
+    }
+
+    clientData.forEach(client => {
+        const clientCard = document.createElement("div");
+        clientCard.classList.add("client-card");
+
+        // Extract initials from client name
+        const initials = client.name
+            ? client.name.split(" ").map(word => word[0]).join("").toUpperCase()
+            : "C";
+
+        clientCard.innerHTML = `
+            <div class="client-card-header">
+                <div class="client-avatar">${initials}</div>
+                <div class="client-actions">
+                    <button class="btn btn-small view-client" data-id="${client._id}">View</button>
+                    <button class="btn btn-small edit-client" data-id="${client._id}">Edit</button>
+                </div>
+            </div>
+            <div class="client-details">
+                <h3>${client.name || "Unknown Client"}</h3>
+                <div class="client-detail">
+                    <i class="fas fa-envelope"></i>
+                    ${client.email || "No Email"}
+                </div>
+                <div class="client-detail">
+                    <i class="fas fa-phone"></i>
+                    ${client.phone || "No Phone"}
+                </div>
+                <div class="client-detail">
+                    <i class="fas fa-truck"></i>
+                    Active Vehicles: ${client.vehicles || "N/A"}
+                </div>
+                <div class="client-detail">
+                    <span class="badge ${client.status === "active" ? "badge-success" : "badge-danger"}">
+                        ${client.status ? client.status.charAt(0).toUpperCase() + client.status.slice(1) : "Inactive"}
+                    </span>
+                </div>
+            </div>
+        `;
+
+        clientGrid.appendChild(clientCard);
+    });
+
+    // Attach event listeners for view and edit buttons
+    document.querySelectorAll(".view-client").forEach(button => {
+        button.addEventListener("click", function () {
+            const clientId = this.getAttribute("data-id");
+            viewClientDetails(clientId);
+        });
+    });
+
+    document.querySelectorAll(".edit-client").forEach(button => {
+        button.addEventListener("click", function () {
+            const clientId = this.getAttribute("data-id");
+            editClientDetails(clientId);
+        });
+    });
+}
+
+// Function to show loading message
+function showLoadingMessage(message, elementId) {
+    document.getElementById(elementId).innerHTML = `<div class="loading-message">${message}</div>`;
+}
+
+// Function to show error message
+function showErrorMessage(message, elementId) {
+    document.getElementById(elementId).innerHTML = `<div class="error-message">${message}</div>`;
+}
+
+// Function to handle viewing client details (Replace with modal opening logic)
+function viewClientDetails(clientId) {
+    alert(`Viewing details for Client ID: ${clientId}`);
+}
+
+// Function to handle editing client details (Replace with actual edit logic)
+function editClientDetails(clientId) {
+    alert(`Editing Client ID: ${clientId}`);
+}
