@@ -272,13 +272,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.target.classList.contains("view-client")) {
         const clientId = event.target.getAttribute("data-id");
         console.log("Client ID Clicked:", clientId); // ✅ Debugging log
+
         if (!clientId) {
-            console.error("Error: Client ID not found in the button!");
+            console.error("Error: Client ID is missing from the button!");
             return;
         }
+
         openClientDetailModal(clientId);
     }
 });
+
+
 
 
   // Add event listener for modal close
@@ -327,7 +331,7 @@ async function fetchClients() {
 // Function to render clients
 function renderClients(clientData) {
   const clientGrid = document.getElementById("clientGrid");
-  clientGrid.innerHTML = ""; // Clear previous content
+  clientGrid.innerHTML = ""; // Clear existing content
 
   if (!clientData.length) {
       clientGrid.innerHTML = `<div class="no-clients">No clients found</div>`;
@@ -359,6 +363,8 @@ function renderClients(clientData) {
 
       clientGrid.appendChild(clientCard);
   });
+
+  console.log("Clients loaded successfully:", clientData); // ✅ Debugging log
 }
 
 
@@ -368,7 +374,7 @@ function renderClients(clientData) {
 
 
 
-// Function to open client detail modal
+
 // Function to open client detail modal
 async function openClientDetailModal(clientId) {
   if (!clientId) {
