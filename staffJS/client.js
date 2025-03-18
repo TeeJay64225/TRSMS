@@ -351,6 +351,14 @@ function renderClients(clientData) {
   });
 }
 
+
+
+
+
+
+
+
+// Function to open client detail modal
 // Function to open client detail modal
 async function openClientDetailModal(clientId) {
   try {
@@ -361,25 +369,36 @@ async function openClientDetailModal(clientId) {
       }
 
       const response = await fetch(`https://trsms-db.onrender.com/api/clients/${clientId}`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${token}` }
-      });
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    
+    const data = await response.json();
+    console.log("API Response:", data);
+    
+    if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch client details");
+    }
+    
 
-      if (!response.ok) {
-          throw new Error("Failed to fetch client details");
-      }
+      populateClientDetails(data);
 
-      const client = await response.json();
-      populateClientDetails(client);
-
-      // Show modal
-      const modal = document.getElementById("clientDetailModal");
-      modal.style.display = "block";
+      document.getElementById("clientDetailModal").style.display = "block";
   } catch (error) {
       console.error("Error fetching client details:", error);
-      alert("Error fetching client details. Please try again later.");
+      alert(error.message || "Error fetching client details. Please try again later.");
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 // Function to populate client details in the modal
 function populateClientDetails(client) {
