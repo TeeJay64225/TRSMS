@@ -5,13 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('token');
 
     if (!userString || !token) {
-        window.location.href = '../admin/admin_dashboard.html';
+        window.location.href = '../admin/admin_access_control.html';
         return;
     }
 
     const user = JSON.parse(userString);
     if (user.role !== 'admin') {
-        window.location.href = '../admin/admin_dashboard.html';
+        window.location.href = '../admin/admin_access_control.html';
         return;
     }
 
